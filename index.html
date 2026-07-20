@@ -80,7 +80,6 @@
             z-index: 10;
         }
 
-        /* หัวข้อชื่อฟอนต์น่ารัก ๆ แทนที่รูปภาพเดิม */
         .auth-text-logo {
             font-size: 2.3rem;
             font-weight: 700;
@@ -89,10 +88,7 @@
             margin-bottom: 5px;
             letter-spacing: 1px;
         }
-        .auth-text-logo span {
-            color: #ef4444;
-        }
-
+        .auth-text-logo span { color: #ef4444; }
         .auth-container p { color: #94a3b8; font-size: 0.95rem; margin-top: 5px; margin-bottom: 35px;}
 
         .key-input-field {
@@ -163,12 +159,7 @@
             font-size: 0.9rem;
             color: #fff;
         }
-        .timer-box span {
-            color: #00f0ff;
-            font-weight: bold;
-            font-size: 1rem;
-        }
-
+        .timer-box span { color: #00f0ff; font-weight: bold; font-size: 1rem; }
         .section-title { font-size: 0.85rem; color: #64748b; text-transform: uppercase; letter-spacing: 1px; margin: 20px 0 12px 5px; }
 
         .function-card {
@@ -212,7 +203,6 @@
 
     <!-- [1] หน้าจอสำหรับกรอกคีย์ -->
     <div class="auth-container" id="auth-screen">
-        <!-- เปลี่ยนเป็นข้อความชื่อระบบแบบฟอนต์น่ารัก ๆ เรียบร้อยแล้ว -->
         <div class="auth-text-logo">AIMBOT-<span>android</span></div>
         <p>Authentication Required</p>
         
@@ -304,7 +294,8 @@
                     setTimeout(() => gates.classList.add('plates-open'), 500);
                     return;
                 } else {
-                    localStorage.removeItem('key_expiry_time');
+                    // หากเวลาเก็บไว้หมดอายุลง ให้ทำลายทิ้งและส่งเข้าสู่กระบวนการบล็อกคีย์ถาวร
+                    handleKeyExpired();
                 }
             }
             
@@ -313,19 +304,31 @@
             }, 500);
         };
 
+        // ฟังก์ชันตรวจสอบความถูกต้องของคีย์
         function verifyKey() {
             const inputKey = document.getElementById('access-key').value.trim();
             
             const pattern1 = /^pooh-\d+day-proxy\d{1,10}$/;
             const pattern2 = /^proxy-roblox-\d+day-[a-zA-Z]{1,10}$/;
 
+            // 1. ดึงข้อมูลบัญชีดำจากระบบ เพื่อเช็คว่าคีย์นี้เคยหมดอายุถาวรไปแล้วหรือยัง
+            let blacklistedKeys = JSON.parse(localStorage.getItem('blacklisted_keys')) || [];
+            if (blacklistedKeys.includes(inputKey)) {
+                alert('คีย์นี้หมดอายุการใช้งานถาวรแล้ว! ไม่สามารถใช้งานได้อีก');
+                return;
+            }
+
+            // 2. ตรวจสอบตามรูปแบบ RegEx ปกติ
             if (pattern1.test(inputKey) || pattern2.test(inputKey)) {
                 
                 const dayMatch = inputKey.match(/(\d+)day/);
                 const days = dayMatch ? parseInt(dayMatch[1]) : 1;
 
                 const expiryTime = new Date().getTime() + (days * 24 * 60 * 60 * 1000);
+                
+                // เก็บค่าทั่งเวลาหมดอายุและชื่อคีย์ปัจจุบันเอาไว้
                 localStorage.setItem('key_expiry_time', expiryTime);
+                localStorage.setItem('current_active_key', inputKey);
 
                 gates.classList.remove('plates-open');
                 
@@ -345,6 +348,7 @@
             }
         }
 
+        // ฟังก์ชันนับเวลาถอยหลัง
         function startCountdown(expiryMs) {
             clearInterval(timerInterval);
 
@@ -354,10 +358,7 @@
 
                 if (distance < 0) {
                     clearInterval(timerInterval);
-                    document.getElementById('key-countdown').innerText = "คีย์หมดอายุแล้ว!";
-                    localStorage.removeItem('key_expiry_time');
-                    alert('คีย์ของคุณหมดอายุแล้ว ระบบจะพากลับหน้าล็อกอิน');
-                    location.reload();
+                    handleKeyExpired(); // เรียกฟังก์ชันล็อกและแบนคีย์ถาวร
                     return;
                 }
 
@@ -372,6 +373,29 @@
 
             updateTimer();
             timerInterval = setInterval(updateTimer, 1000);
+        }
+
+        // ฟังก์ชันแบนคีย์ถาวรเมื่อเวลาหมดลง
+        function handleKeyExpired() {
+            document.getElementById('key-countdown').innerText = "คีย์หมดอายุถาวรแล้ว!";
+            
+            const activeKey = localStorage.getItem('current_active_key');
+            if (activeKey) {
+                // ดึงรายการคีย์ที่เคยตายแล้วมา
+                let blacklistedKeys = JSON.parse(localStorage.getItem('blacklisted_keys')) || [];
+                // เพิ่มคีย์ปัจจุบันเข้าไปในบัญชีดำถ้ายังไม่มี
+                if (!blacklistedKeys.includes(activeKey)) {
+                    blacklistedKeys.push(activeKey);
+                    localStorage.setItem('blacklisted_keys', JSON.stringify(blacklistedKeys));
+                }
+            }
+
+            // ล้างข้อมูลเซสชันการล็อกอินปัจจุบันออก
+            localStorage.removeItem('key_expiry_time');
+            localStorage.removeItem('current_active_key');
+
+            alert('คีย์ของคุณหมดอายุถาวรแล้ว! จะไม่สามารถใช้คีย์คำนี้ได้อีกต่อไป');
+            location.reload(); // เด้งกลับไปหน้ารับคีย์ใหม่
         }
 
         document.addEventListener('keydown', function(event) {
