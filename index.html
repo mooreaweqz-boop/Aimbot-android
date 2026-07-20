@@ -294,7 +294,6 @@
                     setTimeout(() => gates.classList.add('plates-open'), 500);
                     return;
                 } else {
-                    // หากเวลาเก็บไว้หมดอายุลง ให้ทำลายทิ้งและส่งเข้าสู่กระบวนการบล็อกคีย์ถาวร
                     handleKeyExpired();
                 }
             }
@@ -308,25 +307,35 @@
         function verifyKey() {
             const inputKey = document.getElementById('access-key').value.trim();
             
-            const pattern1 = /^pooh-\d+day-proxy\d{1,10}$/;
-            const pattern2 = /^proxy-roblox-\d+day-[a-zA-Z]{1,10}$/;
+            // ปรับปรุง RegEx ให้ยอมรับวัน (day) หรือชั่วโมง (hour/hours/hr)
+            const pattern1 = /^pooh-\d+(day|hour|hours|hr)-proxy\d{1,10}$/;
+            const pattern2 = /^proxy-roblox-\d+(day|hour|hours|hr)-[a-zA-Z]{1,10}$/;
 
-            // 1. ดึงข้อมูลบัญชีดำจากระบบ เพื่อเช็คว่าคีย์นี้เคยหมดอายุถาวรไปแล้วหรือยัง
+            // 1. ตรวจสอบบัญชีดำ (คีย์ที่หมดอายุถาวรแล้ว)
             let blacklistedKeys = JSON.parse(localStorage.getItem('blacklisted_keys')) || [];
             if (blacklistedKeys.includes(inputKey)) {
                 alert('คีย์นี้หมดอายุการใช้งานถาวรแล้ว! ไม่สามารถใช้งานได้อีก');
                 return;
             }
 
-            // 2. ตรวจสอบตามรูปแบบ RegEx ปกติ
+            // 2. ตรวจสอบรูปแบบคีย์
             if (pattern1.test(inputKey) || pattern2.test(inputKey)) {
                 
-                const dayMatch = inputKey.match(/(\d+)day/);
-                const days = dayMatch ? parseInt(dayMatch[1]) : 1;
+                // ดึงตัวเลขเวลา และหน่วยเวลา (day หรือชั่วโมง) ออกมาจากคีย์
+                const timeMatch = inputKey.match(/(\d+)(day|hour|hours|hr)/);
+                const timeValue = timeMatch ? parseInt(timeMatch[1]) : 1;
+                const timeUnit = timeMatch ? timeMatch[2] : 'day';
 
-                const expiryTime = new Date().getTime() + (days * 24 * 60 * 60 * 1000);
+                let durationMs = 0;
+                // คำนวณเวลาเป็นมิลลิวินาทีตามหน่วยที่กรอก
+                if (timeUnit === 'day') {
+                    durationMs = timeValue * 24 * 60 * 60 * 1000; // แปลงวัน
+                } else {
+                    durationMs = timeValue * 60 * 60 * 1000; // แปลงชั่วโมง (hour, hours, hr)
+                }
+
+                const expiryTime = new Date().getTime() + durationMs;
                 
-                // เก็บค่าทั่งเวลาหมดอายุและชื่อคีย์ปัจจุบันเอาไว้
                 localStorage.setItem('key_expiry_time', expiryTime);
                 localStorage.setItem('current_active_key', inputKey);
 
@@ -358,7 +367,7 @@
 
                 if (distance < 0) {
                     clearInterval(timerInterval);
-                    handleKeyExpired(); // เรียกฟังก์ชันล็อกและแบนคีย์ถาวร
+                    handleKeyExpired();
                     return;
                 }
 
@@ -381,21 +390,18 @@
             
             const activeKey = localStorage.getItem('current_active_key');
             if (activeKey) {
-                // ดึงรายการคีย์ที่เคยตายแล้วมา
                 let blacklistedKeys = JSON.parse(localStorage.getItem('blacklisted_keys')) || [];
-                // เพิ่มคีย์ปัจจุบันเข้าไปในบัญชีดำถ้ายังไม่มี
                 if (!blacklistedKeys.includes(activeKey)) {
                     blacklistedKeys.push(activeKey);
                     localStorage.setItem('blacklisted_keys', JSON.stringify(blacklistedKeys));
                 }
             }
 
-            // ล้างข้อมูลเซสชันการล็อกอินปัจจุบันออก
             localStorage.removeItem('key_expiry_time');
             localStorage.removeItem('current_active_key');
 
             alert('คีย์ของคุณหมดอายุถาวรแล้ว! จะไม่สามารถใช้คีย์คำนี้ได้อีกต่อไป');
-            location.reload(); // เด้งกลับไปหน้ารับคีย์ใหม่
+            location.reload();
         }
 
         document.addEventListener('keydown', function(event) {
