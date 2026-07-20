@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Optimus UI Dashboard</title>
+    <style>
+        /* CSS Reset & Cyber ธีม */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            background-color: #0d1117;
+            color: #00f0ff;
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            overflow-x: hidden;
+            height: 100vh;
+        }
+
+        /* -----------------------------------------
+           [1] OPTIMUS INTRO ANIMATION (หน้ากากเหล็กขยับ)
+        ----------------------------------------- */
+        .intro-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            z-index: 999;
+            pointer-events: none; /* เพื่อให้คลิกทะลุได้หลังจากอนิเมชันจบ */
+        }
+
+        /* แผงเหล็กฝั่งซ้าย */
+        .plate-left {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(135deg, #1f2937, #111827);
+            border-right: 4px solid #ef4444; /* เส้นไฟนีออนสีแดงขอบหน้ากาก */
+            box-shadow: 10px 0 30px rgba(239, 68, 68, 0.3);
+            transform-origin: left;
+            animation: plateOpenLeft 1.4s cubic-bezier(0.77, 0, 0.175, 1) forwards;
+            animation-delay: 0.8s; /* รอให้เสียงหรือไฟติดก่อนค่อยขยับ */
+        }
+
+        /* แผงเหล็กฝั่งขวา */
+        .plate-right {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(225deg, #1f2937, #111827);
+            border-left: 4px solid #1d4ed8; /* เส้นไฟนีออนสีน้ำเงิน */
+            box-shadow: -10px 0 30px rgba(29, 78, 216, 0.3);
+            transform-origin: right;
+            animation: plateOpenRight 1.4s cubic-bezier(0.77, 0, 0.175, 1) forwards;
+            animation-delay: 0.8s;
+        }
+
+        /* โลโก้หรือแกนพลังงานตรงกลางที่จะแยกออกจากกัน */
+        .core-lock {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 120px;
+            height: 120px;
+            background: #00f0ff;
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+            box-shadow: 0 0 30px #00f0ff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #000;
+            animation: coreFade 0.6s 1.2s forwards;
+            z-index: 1000;
+        }
+
+        /* คีย์เฟรมการขยับของแผงเหล็กกลไก */
+        @keyframes plateOpenLeft {
+            0% { transform: translateX(0) scaleX(1); }
+            40% { transform: translateX(-10px) scaleX(1); border-right-color: #00f0ff; } /* จังหวะปลดล็อคกลไก */
+            100% { transform: translateX(-105%) skewX(-5deg); opacity: 0; } /* สไลด์เปิดออกไปด้านข้าง */
+        }
+
+        @keyframes plateOpenRight {
+            0% { transform: translateX(0) scaleX(1); }
+            40% { transform: translateX(10px) scaleX(1); border-left-color: #00f0ff; }
+            100% { transform: translateX(105%) skewX(5deg); opacity: 0; }
+        }
+
+        @keyframes coreFade {
+            0% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+            100% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+        }
+
+        /* -----------------------------------------
+           [2] MAIN UI CONTENT (หน้าเว็บหลักสไตล์ Sci-Fi)
+        ----------------------------------------- */
+        .main-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            opacity: 0;
+            transform: scale(0.95);
+            animation: contentShow 1s 1.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes contentShow {
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #1d4ed8;
+            padding-bottom: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        h1 {
+            font-size: 2rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            text-shadow: 0 0 10px #00f0ff;
+            color: #fff;
+        }
+
+        /* การ์ดข้อมูลสไตล์จักรกล */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .cyber-card {
+            background: rgba(31, 41, 55, 0.4);
+            border: 1px solid #1d4ed8;
+            border-left: 5px solid #ef4444; /* ดีไซน์ตัดสีแดงแบบออฟติมัส */
+            padding: 1.5rem;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .cyber-card:hover {
+            border-color: #00f0ff;
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.2);
+            transform: translateY(-3px);
+        }
+
+        /* มุมเหล็กตกแต่ง */
+        .cyber-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            border-width: 0 15px 15px 0;
+            border-style: solid;
+            border-color: #0d1117 #0d1117 #1d4ed8 #1d4ed8;
+        }
+
+        .btn-activate {
+            background: transparent;
+            border: 2px solid #ef4444;
+            color: #ef4444;
+            padding: 0.7rem 1.5rem;
+            cursor: pointer;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: 0.2s;
+            margin-top: 1rem;
+        }
+
+        .btn-activate:hover {
+            background: #ef4444;
+            color: #fff;
+            box-shadow: 0 0 15px #ef4444;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- [1] ส่วนของอนิเมชันเปิดหน้ากากเหล็กตอนเข้าเว็บ -->
+    <div class="intro-overlay">
+        <div class="plate-left"></div>
+        <div class="core-lock">AUTOBOT</div>
+        <div class="plate-right"></div>
+    </div>
+
+    <!-- [2] เนื้อหาหลักของเว็บไซต์ -->
+    <div class="main-container">
+        <header>
+            <h1>OPTIMUS // MATRIX SYSTEM</h1>
+            <span style="color: #ef4444; font-weight: bold;">STATUS: ONLINE</span>
+        </header>
+
+        <main>
+            <div class="grid">
+                <div class="cyber-card">
+                    <h3>ระบบขับเคลื่อน (Drive Core)</h3>
+                    <p style="color: #9ca3af; margin-top: 0.5rem;">พลังงานเสถียรที่ 98% พร้อมแปลงสภาพเป็นรถบรรทุกและหุ่นรบเต็มรูปแบบ</p>
+                    <button class="btn-activate">ENGAGE</button>
+                </div>
+
+                <div class="cyber-card">
+                    <h3>อาวุธ & โล่ (Armaments)</h3>
+                    <p style="color: #9ca3af; margin-top: 0.5rem;">ดาบเอเนอร์กอน (Energon Sword) และโล่สะท้อนความร้อนพร้อมใช้งาน</p>
+                    <button class="btn-activate">DEPLOY</button>
+                </div>
+
+                <div class="cyber-card">
+                    <h3>ภารกิจหลัก (Mission Log)</h3>
+                    <p style="color: #9ca3af; margin-top: 0.5rem;">"Freedom is the right of all sentient beings." - ปกป้องโลกจากพวกดีเซปติคอนส์</p>
+                    <button class="btn-activate">VIEW DATA</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+</body>
+</html>
