@@ -3,24 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Optimus UI Dashboard</title>
+    <title>NEXT-GEN MULTI-BYPASS</title>
     <style>
-        /* CSS Reset & Cyber ธีม */
+        /* -----------------------------------------
+           [1] GLOBAL STYLES & BACKGROUND
+        ----------------------------------------- */
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         }
+
         body {
-            background-color: #0d1117;
-            color: #00f0ff;
-            font-family: 'Segoe UI', Roboto, sans-serif;
+            background: #000;
+            color: #e2e8f0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 20px;
             overflow-x: hidden;
-            height: 100vh;
         }
 
         /* -----------------------------------------
-           [1] OPTIMUS INTRO ANIMATION (หน้ากากเหล็กขยับ)
+           [2] MECHANIC PLATES (แผงเหล็กกลไกสลับหน้า)
         ----------------------------------------- */
         .intro-overlay {
             position: fixed;
@@ -28,203 +35,298 @@
             left: 0;
             width: 100%;
             height: 100vh;
-            z-index: 999;
-            pointer-events: none; /* เพื่อให้คลิกทะลุได้หลังจากอนิเมชันจบ */
+            z-index: 9999;
+            pointer-events: none;
         }
-
-        /* แผงเหล็กฝั่งซ้าย */
-        .plate-left {
+        .plate-left, .plate-right {
             position: absolute;
             top: 0;
-            left: 0;
             width: 50%;
             height: 100%;
-            background: linear-gradient(135deg, #1f2937, #111827);
-            border-right: 4px solid #ef4444; /* เส้นไฟนีออนสีแดงขอบหน้ากาก */
-            box-shadow: 10px 0 30px rgba(239, 68, 68, 0.3);
-            transform-origin: left;
-            animation: plateOpenLeft 1.4s cubic-bezier(0.77, 0, 0.175, 1) forwards;
-            animation-delay: 0.8s; /* รอให้เสียงหรือไฟติดก่อนค่อยขยับ */
+            background: linear-gradient(135deg, #0f172a, #1e293b);
+            border-color: #ef4444;
+            box-shadow: 0 0 30px rgba(239, 68, 68, 0.2);
+            transition: transform 1s cubic-bezier(0.77, 0, 0.175, 1), opacity 0.8s;
+        }
+        .plate-left { left: 0; border-right: 3px solid #ef4444; transform: translateX(0); }
+        .plate-right { right: 0; border-left: 3px solid #ef4444; transform: translateX(0); }
+
+        /* คลาสควบคุมตอนสั่งให้เหล็กขยับเปิด-ปิด */
+        .plates-open .plate-left { transform: translateX(-105%) skewX(-5deg); opacity: 0; }
+        .plates-open .plate-right { transform: translateX(105%) skewX(5deg); opacity: 0; }
+
+        /* -----------------------------------------
+           [3] AUTHENTICATION UI (หน้ากรอกคีย์ แดง-ดำ)
+        ----------------------------------------- */
+        .auth-container {
+            width: 100%;
+            max-width: 400px;
+            background: rgba(10, 10, 10, 0.85);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 2px solid rgba(239, 68, 68, 0.4);
+            border-radius: 24px;
+            padding: 35px 25px;
+            box-shadow: 0 0 40px rgba(239, 68, 68, 0.15), inset 0 0 20px rgba(0, 0, 0, 0.8);
+            margin-top: 50px;
+            text-align: center;
+            display: block;
+            z-index: 10;
         }
 
-        /* แผงเหล็กฝั่งขวา */
-        .plate-right {
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 50%;
-            height: 100%;
-            background: linear-gradient(225deg, #1f2937, #111827);
-            border-left: 4px solid #1d4ed8; /* เส้นไฟนีออนสีน้ำเงิน */
-            box-shadow: -10px 0 30px rgba(29, 78, 216, 0.3);
-            transform-origin: right;
-            animation: plateOpenRight 1.4s cubic-bezier(0.77, 0, 0.175, 1) forwards;
-            animation-delay: 0.8s;
-        }
-
-        /* โลโก้หรือแกนพลังงานตรงกลางที่จะแยกออกจากกัน */
-        .core-lock {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 120px;
-            height: 120px;
-            background: #00f0ff;
-            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
-            box-shadow: 0 0 30px #00f0ff;
+        .auth-logo {
+            width: 90px;
+            height: 90px;
+            background: radial-gradient(circle, #ef4444 0%, #7f1d1d 100%);
+            border-radius: 50%;
+            margin: 0 auto 20px;
             display: flex;
             align-items: center;
             justify-content: center;
+            box-shadow: 0 0 25px rgba(239, 68, 68, 0.6);
+            font-size: 2.5rem;
+        }
+
+        .auth-container h2 {
+            font-size: 1.8rem;
+            letter-spacing: 2px;
+            color: #fff;
+        }
+        .auth-container h2 span { color: #ef4444; }
+        .auth-container p { color: #94a3b8; font-size: 0.85rem; margin-top: 5px; margin-bottom: 30px;}
+
+        .key-input-field {
+            width: 100%;
+            padding: 16px;
+            background: rgba(20, 20, 20, 0.8);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 12px;
+            color: #fff;
+            font-size: 1rem;
+            text-align: center;
+            letter-spacing: 2px;
+            outline: none;
+            transition: 0.3s;
+            margin-bottom: 20px;
+        }
+        .key-input-field:focus {
+            border-color: #ef4444;
+            box-shadow: 0 0 15px rgba(239, 68, 68, 0.4);
+        }
+
+        .btn-auth {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(90deg, #b91c1c, #ef4444);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 1rem;
             font-weight: bold;
-            color: #000;
-            animation: coreFade 0.6s 1.2s forwards;
-            z-index: 1000;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: 0.3s;
+            box-shadow: 0 5px 15px rgba(239, 68, 68, 0.4);
         }
-
-        /* คีย์เฟรมการขยับของแผงเหล็กกลไก */
-        @keyframes plateOpenLeft {
-            0% { transform: translateX(0) scaleX(1); }
-            40% { transform: translateX(-10px) scaleX(1); border-right-color: #00f0ff; } /* จังหวะปลดล็อคกลไก */
-            100% { transform: translateX(-105%) skewX(-5deg); opacity: 0; } /* สไลด์เปิดออกไปด้านข้าง */
-        }
-
-        @keyframes plateOpenRight {
-            0% { transform: translateX(0) scaleX(1); }
-            40% { transform: translateX(10px) scaleX(1); border-left-color: #00f0ff; }
-            100% { transform: translateX(105%) skewX(5deg); opacity: 0; }
-        }
-
-        @keyframes coreFade {
-            0% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-            100% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+        .btn-auth:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(239, 68, 68, 0.6);
         }
 
         /* -----------------------------------------
-           [2] MAIN UI CONTENT (หน้าเว็บหลักสไตล์ Sci-Fi)
+           [4] MAIN MENU UI (หน้าฟังก์ชันหลัก - ฟ้านีออน)
         ----------------------------------------- */
-        .main-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 2rem;
-            opacity: 0;
-            transform: scale(0.95);
-            animation: contentShow 1s 1.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        .menu-container {
+            width: 100%;
+            max-width: 450px;
+            background: rgba(13, 27, 42, 0.65);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(0, 240, 255, 0.15);
+            border-radius: 24px;
+            padding: 25px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 0 0 40px rgba(0, 240, 255, 0.05);
+            margin-top: 20px;
+            display: none;
+            z-index: 10;
         }
 
-        @keyframes contentShow {
-            to { opacity: 1; transform: scale(1); }
-        }
+        .menu-header { text-align: center; margin-bottom: 25px; }
+        .menu-header h1 { font-size: 1.8rem; color: #fff; letter-spacing: 2px; text-shadow: 0 0 10px rgba(0, 240, 255, 0.5); }
+        .menu-header p { font-size: 0.75rem; color: #00f0ff; letter-spacing: 3px; margin-top: 5px; font-weight: bold; }
+        .section-title { font-size: 0.8rem; color: #64748b; text-transform: uppercase; letter-spacing: 1.5px; margin: 20px 0 12px 5px; }
 
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 2px solid #1d4ed8;
-            padding-bottom: 1rem;
-            margin-bottom: 2rem;
+        .function-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 12px;
         }
+        .flex-row { display: flex; align-items: center; justify-content: space-between; }
+        .info-area { display: flex; align-items: center; gap: 12px; }
+        .icon { width: 38px; height: 38px; background: rgba(0, 240, 255, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #00f0ff; font-size: 1.2rem; }
+        .text-group .title { font-size: 0.95rem; font-weight: 600; color: #fff; }
+        .text-group .subtitle { font-size: 0.75rem; color: #94a3b8; margin-top: 2px; }
 
-        h1 {
-            font-size: 2rem;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            text-shadow: 0 0 10px #00f0ff;
-            color: #fff;
-        }
+        /* Switch & Slider */
+        .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #334155; transition: .3s; border-radius: 24px; }
+        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .3s; border-radius: 50%; }
+        input:checked + .slider { background-color: #00f0ff; box-shadow: 0 0 10px rgba(0, 240, 255, 0.4); }
+        input:checked + .slider:before { transform: translateX(20px); }
+        .range-container { margin-top: 12px; display: flex; align-items: center; gap: 15px; }
+        .range-slider { -webkit-appearance: none; width: 100%; height: 4px; border-radius: 2px; background: #334155; outline: none; }
+        .range-slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 14px; height: 14px; border-radius: 50%; background: #00f0ff; cursor: pointer; box-shadow: 0 0 8px #00f0ff; }
+        .range-value { font-size: 0.8rem; color: #00f0ff; font-weight: bold; min-width: 30px; text-align: right; }
 
-        /* การ์ดข้อมูลสไตล์จักรกล */
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 1.5rem;
-        }
-
-        .cyber-card {
-            background: rgba(31, 41, 55, 0.4);
-            border: 1px solid #1d4ed8;
-            border-left: 5px solid #ef4444; /* ดีไซน์ตัดสีแดงแบบออฟติมัส */
-            padding: 1.5rem;
-            position: relative;
-            overflow: hidden;
-            transition: all 0.3s ease;
-        }
-
-        .cyber-card:hover {
-            border-color: #00f0ff;
-            box-shadow: 0 0 15px rgba(0, 240, 255, 0.2);
-            transform: translateY(-3px);
-        }
-
-        /* มุมเหล็กตกแต่ง */
-        .cyber-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            right: 0;
-            border-width: 0 15px 15px 0;
-            border-style: solid;
-            border-color: #0d1117 #0d1117 #1d4ed8 #1d4ed8;
-        }
-
-        .btn-activate {
-            background: transparent;
-            border: 2px solid #ef4444;
-            color: #ef4444;
-            padding: 0.7rem 1.5rem;
-            cursor: pointer;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            transition: 0.2s;
-            margin-top: 1rem;
-        }
-
-        .btn-activate:hover {
-            background: #ef4444;
-            color: #fff;
-            box-shadow: 0 0 15px #ef4444;
-        }
+        /* File Upload */
+        .file-upload-box { border: 2px dashed rgba(0, 240, 255, 0.3); border-radius: 16px; padding: 20px; text-align: center; cursor: pointer; background: rgba(0, 240, 255, 0.01); }
+        .file-upload-box p { font-size: 0.85rem; color: #94a3b8; margin-top: 5px; }
+        .file-upload-box span { color: #00f0ff; font-weight: bold; }
+        #file-input { display: none; }
+        .os-badges { display: flex; justify-content: center; gap: 10px; margin-top: 10px; }
+        .badge { font-size: 0.65rem; padding: 3px 8px; border-radius: 5px; background: rgba(255, 255, 255, 0.05); color: #64748b; border: 1px solid rgba(255, 255, 255, 0.1); }
     </style>
 </head>
 <body>
 
-    <!-- [1] ส่วนของอนิเมชันเปิดหน้ากากเหล็กตอนเข้าเว็บ -->
-    <div class="intro-overlay">
+    <!-- แผงเหล็กอนิเมชันสำหรับขยับเปลี่ยนหน้าจอ -->
+    <div class="intro-overlay" id="iron-gates">
         <div class="plate-left"></div>
-        <div class="core-lock">AUTOBOT</div>
         <div class="plate-right"></div>
     </div>
 
-    <!-- [2] เนื้อหาหลักของเว็บไซต์ -->
-    <div class="main-container">
-        <header>
-            <h1>OPTIMUS // MATRIX SYSTEM</h1>
-            <span style="color: #ef4444; font-weight: bold;">STATUS: ONLINE</span>
-        </header>
-
-        <main>
-            <div class="grid">
-                <div class="cyber-card">
-                    <h3>ระบบขับเคลื่อน (Drive Core)</h3>
-                    <p style="color: #9ca3af; margin-top: 0.5rem;">พลังงานเสถียรที่ 98% พร้อมแปลงสภาพเป็นรถบรรทุกและหุ่นรบเต็มรูปแบบ</p>
-                    <button class="btn-activate">ENGAGE</button>
-                </div>
-
-                <div class="cyber-card">
-                    <h3>อาวุธ & โล่ (Armaments)</h3>
-                    <p style="color: #9ca3af; margin-top: 0.5rem;">ดาบเอเนอร์กอน (Energon Sword) และโล่สะท้อนความร้อนพร้อมใช้งาน</p>
-                    <button class="btn-activate">DEPLOY</button>
-                </div>
-
-                <div class="cyber-card">
-                    <h3>ภารกิจหลัก (Mission Log)</h3>
-                    <p style="color: #9ca3af; margin-top: 0.5rem;">"Freedom is the right of all sentient beings." - ปกป้องโลกจากพวกดีเซปติคอนส์</p>
-                    <button class="btn-activate">VIEW DATA</button>
-                </div>
-            </div>
-        </main>
+    <!-- [1] หน้าจอสำหรับกรอกคีย์ (ล็อคอินก่อนเข้า) -->
+    <div class="auth-container" id="auth-screen">
+        <div class="auth-logo">🦅</div>
+        <h2>B-GOD <span>PROXY</span></h2>
+        <p>Authentication Required</p>
+        
+        <input type="text" class="key-input-field" id="access-key" placeholder="ACCESS KEY">
+        <button class="btn-auth" onclick="verifyKey()">AUTHORIZE ACCESS ➔</button>
     </div>
 
+    <!-- [2] หน้าจอเมนูหลัก (จะแสดงหลังจากคีย์ถูกต้องตามเงื่อนไข) -->
+    <div class="menu-container" id="main-menu">
+        <div class="menu-header">
+            <h1>VIPER X</h1>
+            <p>NEXT-GEN MULTI-BYPASS</p>
+        </div>
+
+        <div class="section-title">Combat Configuration</div>
+        
+        <!-- ฟังก์ชันที่ 1: Aimlock Head -->
+        <div class="function-card">
+            <div class="flex-row">
+                <div class="info-area">
+                    <div class="icon">🎯</div>
+                    <div class="text-group">
+                        <div class="title">ล็อคหัวอัตโนมัติ (Aimlock Head)</div>
+                        <div class="subtitle">ระบบหน่วงเป้า ล็อคติดเป้าหมายที่ส่วนหัวอัตโนมัติ</div>
+                    </div>
+                </div>
+                <label class="switch">
+                    <input type="checkbox">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <div class="range-container">
+                <input type="range" class="range-slider" min="0" max="100" value="50" oninput="updateRange(this.value)">
+                <span class="range-value" id="range-val">50%</span>
+            </div>
+        </div>
+
+        <div class="section-title">Optimization & Security</div>
+
+        <!-- ฟังก์ชันที่ 2: Anti Ban -->
+        <div class="function-card">
+            <div class="flex-row">
+                <div class="info-area">
+                    <div class="icon">🛡️</div>
+                    <div class="text-group">
+                        <div class="title">ป้องกันการแบน (Anti-Ban Bypass)</div>
+                        <div class="subtitle">ระบบจำลองข้อมูลและป้องกันการสแกนตรวจจับ 100%</div>
+                    </div>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </div>
+
+        <!-- ฟังก์ชันที่ 3: ปุ่มเลือกไฟล์จากเครื่อง (iOS / Android) -->
+        <div class="section-title">File Injector</div>
+        <div class="file-upload-box" onclick="triggerUpload()">
+            <div style="font-size: 1.8rem; margin-bottom: 5px;">📁</div>
+            <p>คลิกเพื่อ <span>เลือกไฟล์เกม/สคริปต์</span> จากในเครื่อง</p>
+            <div class="os-badges">
+                <span class="badge" style="color: #a3e635; border-color: rgba(163,230,53,0.3)">✓ Android (.obb/.lua)</span>
+                <span class="badge" style="color: #38bdf8; border-color: rgba(56,189,248,0.3)">✓ iOS (.deb/.ipa)</span>
+            </div>
+            <p id="file-name" style="margin-top: 10px; color: #00f0ff; font-weight: bold; font-size: 0.8rem;"></p>
+            <input type="file" id="file-input" onchange="showFileName(this)">
+        </div>
+    </div>
+
+    <!-- -----------------------------------------
+       [5] JAVASCRIPT LOGIC
+    ----------------------------------------- -->
+    <script>
+        const gates = document.getElementById('iron-gates');
+        const authScreen = document.getElementById('auth-screen');
+        const mainMenu = document.getElementById('main-menu');
+
+        // เมื่อโหลดหน้าเว็บเสร็จ ให้แผงเหล็กขยับแยกออก เผยให้เห็นหน้าจอลงทะเบียนคีย์
+        window.onload = function() {
+            setTimeout(() => {
+                gates.classList.add('plates-open');
+            }, 500);
+        };
+
+        // ระบบตรวจสอบคีย์แบบบังคับโครงสร้างและคำว่า day
+        function verifyKey() {
+            const inputKey = document.getElementById('access-key').value.trim();
+            
+            // รูปแบบที่ 1: pooh-ตัวเลขday-proxyและตัวเลข 1-10 ตัว
+            const pattern1 = /^pooh-\d+day-proxy\d{1,10}$/;
+            // รูปแบบที่ 2: proxy-roblox-ตัวเลขday-และตัวอักษรอังกฤษ 1-10 ตัว
+            const pattern2 = /^proxy-roblox-\d+day-[a-zA-Z]{1,10}$/;
+
+            if (pattern1.test(inputKey) || pattern2.test(inputKey)) {
+                // จังหวะที่คีย์ผ่าน: แผงเหล็กจะเลื่อนกลับมาปิดทับฉากหลัง
+                gates.classList.remove('plates-open');
+                
+                setTimeout(() => {
+                    authScreen.style.display = 'none'; // ซ่อนหน้าล็อกอิน
+                    mainMenu.style.display = 'block';   // แสดงหน้าหลักแทน
+                    
+                    // สั่งเปิดแผงเหล็กอีกรอบเพื่อโชว์ UI เมนูหลัก
+                    setTimeout(() => {
+                        gates.classList.add('plates-open');
+                    }, 300);
+                }, 1000);
+                
+            } else {
+                alert('รูปแบบคีย์ไม่ถูกต้อง!\n\nตัวอย่างที่ถูก:\n- pooh-30day-proxy1234\n- proxy-roblox-7day-viptext');
+            }
+        }
+
+        // ฟังก์ชันอัปเดตตัวเลขเปอร์เซ็นต์
+        function updateRange(val) {
+            document.getElementById('range-val').innerText = val + '%';
+        }
+
+        // ฟังก์ชันจัดการระบบอัปโหลดไฟล์
+        function triggerUpload() { document.getElementById('file-input').click(); }
+        function showFileName(input) {
+            const fileNameDisplay = document.getElementById('file-name');
+            if (input.files && input.files.length > 0) {
+                fileNameDisplay.innerText = "ไฟล์ที่เลือก: " + input.files[0].name;
+            }
+        }
+    </script>
 </body>
 </html>
