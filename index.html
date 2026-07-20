@@ -307,9 +307,9 @@
         function verifyKey() {
             const inputKey = document.getElementById('access-key').value.trim();
             
-            // ปรับปรุง RegEx ให้ยอมรับวัน (day) หรือชั่วโมง (hour/hours/hr)
-            const pattern1 = /^pooh-\d+(day|hour|hours|hr)-proxy\d{1,10}$/;
-            const pattern2 = /^proxy-roblox-\d+(day|hour|hours|hr)-[a-zA-Z]{1,10}$/;
+            // ปรับปรุง RegEx ให้ยอมรับเฉพาะ day หรือตัวย่อ hr เท่านั้น
+            const pattern1 = /^pooh-\d+(day|hr)-proxy\d{1,10}$/;
+            const pattern2 = /^proxy-roblox-\d+(day|hr)-[a-zA-Z]{1,10}$/;
 
             // 1. ตรวจสอบบัญชีดำ (คีย์ที่หมดอายุถาวรแล้ว)
             let blacklistedKeys = JSON.parse(localStorage.getItem('blacklisted_keys')) || [];
@@ -321,17 +321,16 @@
             // 2. ตรวจสอบรูปแบบคีย์
             if (pattern1.test(inputKey) || pattern2.test(inputKey)) {
                 
-                // ดึงตัวเลขเวลา และหน่วยเวลา (day หรือชั่วโมง) ออกมาจากคีย์
-                const timeMatch = inputKey.match(/(\d+)(day|hour|hours|hr)/);
+                // ดึงตัวเลขเวลา และหน่วยเวลา (day หรือ hr)
+                const timeMatch = inputKey.match(/(\d+)(day|hr)/);
                 const timeValue = timeMatch ? parseInt(timeMatch[1]) : 1;
                 const timeUnit = timeMatch ? timeMatch[2] : 'day';
 
                 let durationMs = 0;
-                // คำนวณเวลาเป็นมิลลิวินาทีตามหน่วยที่กรอก
                 if (timeUnit === 'day') {
-                    durationMs = timeValue * 24 * 60 * 60 * 1000; // แปลงวัน
-                } else {
-                    durationMs = timeValue * 60 * 60 * 1000; // แปลงชั่วโมง (hour, hours, hr)
+                    durationMs = timeValue * 24 * 60 * 60 * 1000; // คำนวณเป็นวัน
+                } else if (timeUnit === 'hr') {
+                    durationMs = timeValue * 60 * 60 * 1000; // คำนวณเป็นชั่วโมง (ย่อ)
                 }
 
                 const expiryTime = new Date().getTime() + durationMs;
