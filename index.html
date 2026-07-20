@@ -143,12 +143,33 @@
             margin-top: 20px;
             display: none;
             z-index: 10;
+            position: relative;
         }
 
-        .menu-header { text-align: center; margin-bottom: 20px; }
+        .menu-header { text-align: center; margin-bottom: 20px; position: relative; }
         .menu-header h1 { font-size: 1.9rem; color: #fff; text-shadow: 0 0 10px rgba(0, 240, 255, 0.5); font-weight: 700; }
         .menu-header p { font-size: 0.8rem; color: #00f0ff; letter-spacing: 2px; margin-top: 5px; font-weight: bold; }
         
+        /* ปุ่มออกจากคีย์ที่เพิ่มขึ้นมาใหม่ */
+        .btn-logout {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            color: #ef4444;
+            padding: 5px 10px;
+            font-size: 0.75rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .btn-logout:hover {
+            background: #ef4444;
+            color: #fff;
+            box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
+        }
+
         .timer-box {
             background: rgba(0, 240, 255, 0.08);
             border: 1px solid rgba(0, 240, 255, 0.3);
@@ -215,6 +236,8 @@
         <div class="menu-header">
             <h1>AIMBOT-android</h1>
             <p>NEXT-GEN MULTI-BYPASS</p>
+            <!-- ปุ่มออกจากคีย์ -->
+            <button class="btn-logout" onclick="logoutKey()">ออกจากคีย์</button>
         </div>
 
         <div class="timer-box">
@@ -287,10 +310,11 @@
             const savedExpiry = localStorage.getItem('key_expiry_time');
             
             if (savedExpiry) {
-                if (new Date().getTime() < parseInt(savedExpiry)) {
+                // หากเป็นคีย์แบบถาวร (inf) หรือเวลากดใช้งานยังไม่หมด ให้ข้ามผ่านทันที
+                if (savedExpiry === 'inf' || new Date().getTime() < parseInt(savedExpiry)) {
                     authScreen.style.display = 'none';
                     mainMenu.style.display = 'block';
-                    startCountdown(parseInt(savedExpiry));
+                    startCountdown(savedExpiry === 'inf' ? 'inf' : parseInt(savedExpiry));
                     setTimeout(() => gates.classList.add('plates-open'), 500);
                     return;
                 } else {
@@ -307,9 +331,9 @@
         function verifyKey() {
             const inputKey = document.getElementById('access-key').value.trim();
             
-            // ปรับปรุง RegEx ให้ยอมรับเฉพาะ day หรือตัวย่อ hr เท่านั้น
-            const pattern1 = /^pooh-\d+(day|hr)-proxy\d{1,10}$/;
-            const pattern2 = /^proxy-roblox-\d+(day|hr)-[a-zA-Z]{1,10}$/;
+            // อัปเดต RegEx เพิ่มเติมให้รองรับคำย่อ 'inf' (ถาวร)
+            const pattern1 = /^pooh-\d*(day|hr|inf)-proxy\d{1,10}$/;
+            const pattern2 = /^proxy-roblox-\d*(day|hr|inf)-[a-zA-Z]{1,10}$/;
 
             // 1. ตรวจสอบบัญชีดำ (คีย์ที่หมดอายุถาวรแล้ว)
             let blacklistedKeys = JSON.parse(localStorage.getItem('blacklisted_keys')) || [];
@@ -321,19 +345,23 @@
             // 2. ตรวจสอบรูปแบบคีย์
             if (pattern1.test(inputKey) || pattern2.test(inputKey)) {
                 
-                // ดึงตัวเลขเวลา และหน่วยเวลา (day หรือ hr)
-                const timeMatch = inputKey.match(/(\d+)(day|hr)/);
-                const timeValue = timeMatch ? parseInt(timeMatch[1]) : 1;
-                const timeUnit = timeMatch ? timeMatch[2] : 'day';
+                // ตรวจหาคำว่า inf ในคีย์
+                const isInf = inputKey.includes('inf');
+                let expiryTime;
 
-                let durationMs = 0;
-                if (timeUnit === 'day') {
-                    durationMs = timeValue * 24 * 60 * 60 * 1000; // คำนวณเป็นวัน
-                } else if (timeUnit === 'hr') {
-                    durationMs = timeValue * 60 * 60 * 1000; // คำนวณเป็นชั่วโมง (ย่อ)
+                if (isInf) {
+                    expiryTime = 'inf'; // ตั้งค่าเป็นถาวร
+                } else {
+                    const timeMatch = inputKey.match(/(\d+)(day|hr)/);
+                    const timeValue = timeMatch ? parseInt(timeMatch[1]) : 1;
+                    const timeUnit = timeMatch ? timeMatch[2] : 'day';
+
+                    let durationMs = 0;
+                    if (timeUnit === 'day') durationMs = timeValue * 24 * 60 * 60 * 1000;
+                    else if (timeUnit === 'hr') durationMs = timeValue * 60 * 60 * 1000;
+
+                    expiryTime = new Date().getTime() + durationMs;
                 }
-
-                const expiryTime = new Date().getTime() + durationMs;
                 
                 localStorage.setItem('key_expiry_time', expiryTime);
                 localStorage.setItem('current_active_key', inputKey);
@@ -357,12 +385,18 @@
         }
 
         // ฟังก์ชันนับเวลาถอยหลัง
-        function startCountdown(expiryMs) {
+        function startCountdown(expiryValue) {
             clearInterval(timerInterval);
+
+            if (expiryValue === 'inf') {
+                // หากเป็นคีย์แบบถาวร ให้แสดงข้อความตลอดชีพและไม่ต้องตั้งเวลาถอยหลังซ้ำ
+                document.getElementById('key-countdown').innerText = "ถาวร (ตลอดชีพ)";
+                return;
+            }
 
             function updateTimer() {
                 const now = new Date().getTime();
-                const distance = expiryMs - now;
+                const distance = expiryValue - now;
 
                 if (distance < 0) {
                     clearInterval(timerInterval);
@@ -381,6 +415,28 @@
 
             updateTimer();
             timerInterval = setInterval(updateTimer, 1000);
+        }
+
+        // ฟังก์ชันกดออกจากคีย์ปัจจุบัน เพื่อไปกรอกคีย์อื่น
+        function logoutKey() {
+            clearInterval(timerInterval);
+            
+            // ปิดแผงเหล็กกลไกสลับหน้าจอเพื่อความเท่
+            gates.classList.remove('plates-open');
+            
+            setTimeout(() => {
+                // ลบค่าล็อกอินในเซสชันปัจจุบันออก (แต่ไม่ลบประวัติคีย์ที่เคยแบนในบัญชีดำ)
+                localStorage.removeItem('key_expiry_time');
+                localStorage.removeItem('current_active_key');
+                
+                document.getElementById('access-key').value = ''; // ล้างช่องกรอกคีย์เก่าออกให้คลีนๆ
+                authScreen.style.display = 'block';
+                mainMenu.style.display = 'none';
+                
+                setTimeout(() => {
+                    gates.classList.add('plates-open');
+                }, 300);
+            }, 1000);
         }
 
         // ฟังก์ชันแบนคีย์ถาวรเมื่อเวลาหมดลง
