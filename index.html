@@ -4,6 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NEXT-GEN MULTI-BYPASS</title>
+    
+    <!-- ดึงฟอนต์ Mali แสนน่ารักมาจาก Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Mali:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;1,200;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
+
     <style>
         /* -----------------------------------------
            [1] GLOBAL STYLES & BACKGROUND
@@ -12,7 +18,9 @@
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            /* เปลี่ยนฟอนต์ทั้งเว็บเป็นฟอนต์ Mali สุดน่ารัก */
+            font-family: "Mali", cursive, sans-serif;
+            font-weight: 500;
         }
 
         body {
@@ -51,7 +59,6 @@
         .plate-left { left: 0; border-right: 3px solid #ef4444; transform: translateX(0); }
         .plate-right { right: 0; border-left: 3px solid #ef4444; transform: translateX(0); }
 
-        /* คลาสควบคุมตอนสั่งให้เหล็กขยับเปิด-ปิด */
         .plates-open .plate-left { transform: translateX(-105%) skewX(-5deg); opacity: 0; }
         .plates-open .plate-right { transform: translateX(105%) skewX(5deg); opacity: 0; }
 
@@ -91,6 +98,7 @@
             font-size: 1.8rem;
             letter-spacing: 2px;
             color: #fff;
+            font-weight: 700;
         }
         .auth-container h2 span { color: #ef4444; }
         .auth-container p { color: #94a3b8; font-size: 0.85rem; margin-top: 5px; margin-bottom: 30px;}
@@ -122,7 +130,7 @@
             border-radius: 12px;
             color: white;
             font-size: 1rem;
-            font-weight: bold;
+            font-weight: 700;
             letter-spacing: 1px;
             cursor: pointer;
             transition: 0.3s;
@@ -151,9 +159,27 @@
             z-index: 10;
         }
 
-        .menu-header { text-align: center; margin-bottom: 25px; }
-        .menu-header h1 { font-size: 1.8rem; color: #fff; letter-spacing: 2px; text-shadow: 0 0 10px rgba(0, 240, 255, 0.5); }
+        .menu-header { text-align: center; margin-bottom: 20px; }
+        .menu-header h1 { font-size: 1.8rem; color: #fff; letter-spacing: 2px; text-shadow: 0 0 10px rgba(0, 240, 255, 0.5); font-weight: 700; }
         .menu-header p { font-size: 0.75rem; color: #00f0ff; letter-spacing: 3px; margin-top: 5px; font-weight: bold; }
+        
+        .timer-box {
+            background: rgba(0, 240, 255, 0.08);
+            border: 1px solid rgba(0, 240, 255, 0.3);
+            border-radius: 12px;
+            padding: 10px;
+            text-align: center;
+            margin-bottom: 15px;
+            font-size: 0.85rem;
+            color: #fff;
+        }
+        .timer-box span {
+            color: #00f0ff;
+            font-weight: bold;
+            font-size: 1rem;
+            letter-spacing: 1px;
+        }
+
         .section-title { font-size: 0.8rem; color: #64748b; text-transform: uppercase; letter-spacing: 1.5px; margin: 20px 0 12px 5px; }
 
         .function-card {
@@ -169,7 +195,6 @@
         .text-group .title { font-size: 0.95rem; font-weight: 600; color: #fff; }
         .text-group .subtitle { font-size: 0.75rem; color: #94a3b8; margin-top: 2px; }
 
-        /* Switch & Slider */
         .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #334155; transition: .3s; border-radius: 24px; }
@@ -181,7 +206,6 @@
         .range-slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 14px; height: 14px; border-radius: 50%; background: #00f0ff; cursor: pointer; box-shadow: 0 0 8px #00f0ff; }
         .range-value { font-size: 0.8rem; color: #00f0ff; font-weight: bold; min-width: 30px; text-align: right; }
 
-        /* File Upload */
         .file-upload-box { border: 2px dashed rgba(0, 240, 255, 0.3); border-radius: 16px; padding: 20px; text-align: center; cursor: pointer; background: rgba(0, 240, 255, 0.01); }
         .file-upload-box p { font-size: 0.85rem; color: #94a3b8; margin-top: 5px; }
         .file-upload-box span { color: #00f0ff; font-weight: bold; }
@@ -192,13 +216,12 @@
 </head>
 <body>
 
-    <!-- แผงเหล็กอนิเมชันสำหรับขยับเปลี่ยนหน้าจอ -->
     <div class="intro-overlay" id="iron-gates">
         <div class="plate-left"></div>
         <div class="plate-right"></div>
     </div>
 
-    <!-- [1] หน้าจอสำหรับกรอกคีย์ (ล็อคอินก่อนเข้า) -->
+    <!-- [1] หน้าจอสำหรับกรอกคีย์ -->
     <div class="auth-container" id="auth-screen">
         <div class="auth-logo">🦅</div>
         <h2>B-GOD <span>PROXY</span></h2>
@@ -208,16 +231,19 @@
         <button class="btn-auth" onclick="verifyKey()">AUTHORIZE ACCESS ➔</button>
     </div>
 
-    <!-- [2] หน้าจอเมนูหลัก (จะแสดงหลังจากคีย์ถูกต้องตามเงื่อนไข) -->
+    <!-- [2] หน้าจอเมนูหลัก -->
     <div class="menu-container" id="main-menu">
         <div class="menu-header">
             <h1>VIPER X</h1>
             <p>NEXT-GEN MULTI-BYPASS</p>
         </div>
 
+        <div class="timer-box">
+            เวลาคงเหลือสำหรับคีย์นี้: <span id="key-countdown">กำลังโหลดเวลา...</span>
+        </div>
+
         <div class="section-title">Combat Configuration</div>
         
-        <!-- ฟังก์ชันที่ 1: Aimlock Head -->
         <div class="function-card">
             <div class="flex-row">
                 <div class="info-area">
@@ -240,7 +266,6 @@
 
         <div class="section-title">Optimization & Security</div>
 
-        <!-- ฟังก์ชันที่ 2: Anti Ban -->
         <div class="function-card">
             <div class="flex-row">
                 <div class="info-area">
@@ -257,7 +282,6 @@
             </div>
         </div>
 
-        <!-- ฟังก์ชันที่ 3: ปุ่มเลือกไฟล์จากเครื่อง (iOS / Android) -->
         <div class="section-title">File Injector</div>
         <div class="file-upload-box" onclick="triggerUpload()">
             <div style="font-size: 1.8rem; margin-bottom: 5px;">📁</div>
@@ -278,48 +302,93 @@
         const gates = document.getElementById('iron-gates');
         const authScreen = document.getElementById('auth-screen');
         const mainMenu = document.getElementById('main-menu');
+        let timerInterval;
 
-        // เมื่อโหลดหน้าเว็บเสร็จ ให้แผงเหล็กขยับแยกออก เผยให้เห็นหน้าจอลงทะเบียนคีย์
         window.onload = function() {
+            const savedExpiry = localStorage.getItem('key_expiry_time');
+            
+            if (savedExpiry) {
+                if (new Date().getTime() < parseInt(savedExpiry)) {
+                    authScreen.style.display = 'none';
+                    mainMenu.style.display = 'block';
+                    startCountdown(parseInt(savedExpiry));
+                    setTimeout(() => gates.classList.add('plates-open'), 500);
+                    return;
+                } else {
+                    localStorage.removeItem('key_expiry_time');
+                }
+            }
+            
             setTimeout(() => {
                 gates.classList.add('plates-open');
             }, 500);
         };
 
-        // ระบบตรวจสอบคีย์แบบบังคับโครงสร้างและคำว่า day
         function verifyKey() {
             const inputKey = document.getElementById('access-key').value.trim();
             
-            // รูปแบบที่ 1: pooh-ตัวเลขday-proxyและตัวเลข 1-10 ตัว
             const pattern1 = /^pooh-\d+day-proxy\d{1,10}$/;
-            // รูปแบบที่ 2: proxy-roblox-ตัวเลขday-และตัวอักษรอังกฤษ 1-10 ตัว
             const pattern2 = /^proxy-roblox-\d+day-[a-zA-Z]{1,10}$/;
 
             if (pattern1.test(inputKey) || pattern2.test(inputKey)) {
-                // จังหวะที่คีย์ผ่าน: แผงเหล็กจะเลื่อนกลับมาปิดทับฉากหลัง
+                
+                const dayMatch = inputKey.match(/(\d+)day/);
+                const days = dayMatch ? parseInt(dayMatch[1]) : 1;
+
+                const expiryTime = new Date().getTime() + (days * 24 * 60 * 60 * 1000);
+                localStorage.setItem('key_expiry_time', expiryTime);
+
                 gates.classList.remove('plates-open');
                 
                 setTimeout(() => {
-                    authScreen.style.display = 'none'; // ซ่อนหน้าล็อกอิน
-                    mainMenu.style.display = 'block';   // แสดงหน้าหลักแทน
+                    authScreen.style.display = 'none';
+                    mainMenu.style.display = 'block';
                     
-                    // สั่งเปิดแผงเหล็กอีกรอบเพื่อโชว์ UI เมนูหลัก
+                    startCountdown(expiryTime);
+                    
                     setTimeout(() => {
                         gates.classList.add('plates-open');
                     }, 300);
                 }, 1000);
                 
             } else {
-                alert('รูปแบบคีย์ไม่ถูกต้อง!\n\nตัวอย่างที่ถูก:\n- pooh-30day-proxy1234\n- proxy-roblox-7day-viptext');
+                alert('รูปแบบคีย์ไม่ถูกต้อง! กรุณาลองใหม่อีกครั้ง');
             }
         }
 
-        // ฟังก์ชันอัปเดตตัวเลขเปอร์เซ็นต์
+        function startCountdown(expiryMs) {
+            clearInterval(timerInterval);
+
+            function updateTimer() {
+                const now = new Date().getTime();
+                const distance = expiryMs - now;
+
+                if (distance < 0) {
+                    clearInterval(timerInterval);
+                    document.getElementById('key-countdown').innerText = "คีย์หมดอายุแล้ว!";
+                    localStorage.removeItem('key_expiry_time');
+                    alert('คีย์ของคุณหมดอายุแล้ว ระบบจะพากลับหน้าล็อกอิน');
+                    location.reload();
+                    return;
+                }
+
+                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                document.getElementById('key-countdown').innerText = 
+                    `${days}วัน ${hours.toString().padStart(2, '0')}ชม. ${minutes.toString().padStart(2, '0')}น. ${seconds.toString().padStart(2, '0')}วิ.`;
+            }
+
+            updateTimer();
+            timerInterval = setInterval(updateTimer, 1000);
+        }
+
         function updateRange(val) {
             document.getElementById('range-val').innerText = val + '%';
         }
 
-        // ฟังก์ชันจัดการระบบอัปโหลดไฟล์
         function triggerUpload() { document.getElementById('file-input').click(); }
         function showFileName(input) {
             const fileNameDisplay = document.getElementById('file-name');
