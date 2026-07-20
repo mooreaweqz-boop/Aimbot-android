@@ -18,7 +18,6 @@
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            /* เปลี่ยนฟอนต์ทั้งเว็บเป็นฟอนต์ Mali สุดน่ารัก */
             font-family: "Mali", cursive, sans-serif;
             font-weight: 500;
         }
@@ -81,17 +80,24 @@
             z-index: 10;
         }
 
-        .auth-logo {
+        /* ปรับกรอบโลโก้เป็นสี่เหลี่ยมขนาดพอดีกับรูปภาพ .gif */
+        .auth-logo-box {
             width: 90px;
             height: 90px;
-            background: radial-gradient(circle, #ef4444 0%, #7f1d1d 100%);
-            border-radius: 50%;
             margin: 0 auto 20px;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 0 25px rgba(239, 68, 68, 0.6);
-            font-size: 2.5rem;
+            overflow: hidden;
+            border-radius: 12px; /* ทำมุมโค้งมนนิดๆ ให้ดูเหลี่ยมสวยงาม */
+            box-shadow: 0 0 20px rgba(239, 68, 68, 0.4);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .auth-logo-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* จัดรูปภาพให้ขยายเต็มและพอดีกับสี่เหลี่ยม */
         }
 
         .auth-container h2 {
@@ -223,7 +229,10 @@
 
     <!-- [1] หน้าจอสำหรับกรอกคีย์ -->
     <div class="auth-container" id="auth-screen">
-        <div class="auth-logo">🦅</div>
+        <!-- เปลี่ยนกรอบรูปเป็นทรงสี่เหลี่ยมตามสั่ง และดึงรูปจากดีสคอร์ด -->
+        <div class="auth-logo-box">
+            <img src="https://cdn.discordapp.com/attachments/1528247158069792863/1528710127861891203/standard_4.gif?ex=6a5f49c0&is=6a5df840&hm=ee37fdaa8801111756c0377f870893a9e4d940b79e5e829fe683ab5c5a408881&" alt="Logo">
+        </div>
         <h2>B-GOD <span>PROXY</span></h2>
         <p>Authentication Required</p>
         
@@ -384,6 +393,14 @@
             updateTimer();
             timerInterval = setInterval(updateTimer, 1000);
         }
+
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
+                if (document.getElementById('auth-screen').style.display !== 'none') {
+                    verifyKey();
+                }
+            }
+        });
 
         function updateRange(val) {
             document.getElementById('range-val').innerText = val + '%';
