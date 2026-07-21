@@ -150,7 +150,6 @@
         .menu-header h1 { font-size: 1.9rem; color: #fff; text-shadow: 0 0 10px rgba(0, 240, 255, 0.5); font-weight: 700; }
         .menu-header p { font-size: 0.8rem; color: #00f0ff; letter-spacing: 2px; margin-top: 5px; font-weight: bold; }
         
-        /* ปุ่มออกจากคีย์ที่เพิ่มขึ้นมาใหม่ */
         .btn-logout {
             position: absolute;
             top: 0;
@@ -207,12 +206,75 @@
         .range-slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 14px; height: 14px; border-radius: 50%; background: #00f0ff; cursor: pointer; box-shadow: 0 0 8px #00f0ff; }
         .range-value { font-size: 0.85rem; color: #00f0ff; font-weight: bold; min-width: 30px; text-align: right; }
 
+        /* File Upload & Run Box */
         .file-upload-box { border: 2px dashed rgba(0, 240, 255, 0.3); border-radius: 16px; padding: 20px; text-align: center; cursor: pointer; background: rgba(0, 240, 255, 0.01); }
         .file-upload-box p { font-size: 0.9rem; color: #94a3b8; margin-top: 5px; }
         .file-upload-box span { color: #00f0ff; font-weight: bold; }
         #file-input { display: none; }
         .os-badges { display: flex; justify-content: center; gap: 10px; margin-top: 10px; }
         .badge { font-size: 0.7rem; padding: 3px 8px; border-radius: 5px; background: rgba(255, 255, 255, 0.05); color: #64748b; border: 1px solid rgba(255, 255, 255, 0.1); }
+
+        .btn-run-file {
+            width: 100%;
+            margin-top: 12px;
+            padding: 12px;
+            background: linear-gradient(90deg, #0284c7, #00f0ff);
+            border: none;
+            border-radius: 12px;
+            color: #000;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.3s;
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.3);
+        }
+        .btn-run-file:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 25px rgba(0, 240, 255, 0.5);
+        }
+
+        /* Game Launcher Grid */
+        .game-launcher-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .game-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(0, 240, 255, 0.2);
+            border-radius: 16px;
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .game-card:hover {
+            background: rgba(0, 240, 255, 0.1);
+            border-color: #00f0ff;
+            transform: translateY(-3px);
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.3);
+        }
+
+        .game-card img {
+            width: 55px;
+            height: 55px;
+            border-radius: 12px;
+            object-fit: cover;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .game-card span {
+            font-size: 0.8rem;
+            color: #fff;
+            font-weight: 700;
+        }
     </style>
 </head>
 <body>
@@ -236,7 +298,6 @@
         <div class="menu-header">
             <h1>AIMBOT-android</h1>
             <p>NEXT-GEN MULTI-BYPASS</p>
-            <!-- ปุ่มออกจากคีย์ -->
             <button class="btn-logout" onclick="logoutKey()">ออกจากคีย์</button>
         </div>
 
@@ -284,7 +345,8 @@
             </div>
         </div>
 
-        <div class="section-title">File Injector</div>
+        <!-- File Injector Section -->
+        <div class="section-title">File Injector & Execution</div>
         <div class="file-upload-box" onclick="triggerUpload()">
             <div style="font-size: 1.8rem; margin-bottom: 5px;">📁</div>
             <p>คลิกเพื่อ <span>เลือกไฟล์เกม/สคริปต์</span> จากในเครื่อง</p>
@@ -294,6 +356,20 @@
             </div>
             <p id="file-name" style="margin-top: 10px; color: #00f0ff; font-weight: bold; font-size: 0.8rem;"></p>
             <input type="file" id="file-input" onchange="showFileName(this)">
+        </div>
+        <button class="btn-run-file" onclick="runSelectedFile()">▶ รันไฟล์ที่เลือก</button>
+
+        <!-- Game Launcher Section -->
+        <div class="section-title">Launch Game</div>
+        <div class="game-launcher-grid">
+            <div class="game-card" onclick="launchGame('freefire')">
+                <img src="https://cdn.discordapp.com/attachments/1528247158069792863/1529066138183401614/IMG_6308.png?ex=6a609550&is=6a5f43d0&hm=a225758a21e32bd5ff12526f6a0612243ebac4592015a5483bd1cf4141fbf2cc&" alt="Free Fire">
+                <span>Free Fire</span>
+            </div>
+            <div class="game-card" onclick="launchGame('freefiremax')">
+                <img src="https://cdn.discordapp.com/attachments/1528247158069792863/1529066114548629574/IMG_6309.png?ex=6a60954a&is=6a5f43ca&hm=c7370c0e9a168b1c9a32aa1161d53ad079e3fef76a89cf212a15771c21a905bf&" alt="Free Fire MAX">
+                <span>Free Fire MAX</span>
+            </div>
         </div>
     </div>
 
@@ -310,7 +386,6 @@
             const savedExpiry = localStorage.getItem('key_expiry_time');
             
             if (savedExpiry) {
-                // หากเป็นคีย์แบบถาวร (inf) หรือเวลากดใช้งานยังไม่หมด ให้ข้ามผ่านทันที
                 if (savedExpiry === 'inf' || new Date().getTime() < parseInt(savedExpiry)) {
                     authScreen.style.display = 'none';
                     mainMenu.style.display = 'block';
@@ -327,30 +402,24 @@
             }, 500);
         };
 
-        // ฟังก์ชันตรวจสอบความถูกต้องของคีย์
         function verifyKey() {
             const inputKey = document.getElementById('access-key').value.trim();
             
-            // อัปเดต RegEx เพิ่มเติมให้รองรับคำย่อ 'inf' (ถาวร)
             const pattern1 = /^pooh-\d*(day|hr|inf)-proxy\d{1,10}$/;
             const pattern2 = /^proxy-roblox-\d*(day|hr|inf)-[a-zA-Z]{1,10}$/;
 
-            // 1. ตรวจสอบบัญชีดำ (คีย์ที่หมดอายุถาวรแล้ว)
             let blacklistedKeys = JSON.parse(localStorage.getItem('blacklisted_keys')) || [];
             if (blacklistedKeys.includes(inputKey)) {
                 alert('คีย์นี้หมดอายุการใช้งานถาวรแล้ว! ไม่สามารถใช้งานได้อีก');
                 return;
             }
 
-            // 2. ตรวจสอบรูปแบบคีย์
             if (pattern1.test(inputKey) || pattern2.test(inputKey)) {
-                
-                // ตรวจหาคำว่า inf ในคีย์
                 const isInf = inputKey.includes('inf');
                 let expiryTime;
 
                 if (isInf) {
-                    expiryTime = 'inf'; // ตั้งค่าเป็นถาวร
+                    expiryTime = 'inf';
                 } else {
                     const timeMatch = inputKey.match(/(\d+)(day|hr)/);
                     const timeValue = timeMatch ? parseInt(timeMatch[1]) : 1;
@@ -384,12 +453,10 @@
             }
         }
 
-        // ฟังก์ชันนับเวลาถอยหลัง
         function startCountdown(expiryValue) {
             clearInterval(timerInterval);
 
             if (expiryValue === 'inf') {
-                // หากเป็นคีย์แบบถาวร ให้แสดงข้อความตลอดชีพและไม่ต้องตั้งเวลาถอยหลังซ้ำ
                 document.getElementById('key-countdown').innerText = "ถาวร (ตลอดชีพ)";
                 return;
             }
@@ -407,77 +474,4 @@
                 const days = Math.floor(distance / (1000 * 60 * 60 * 24));
                 const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
                 const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-                document.getElementById('key-countdown').innerText = 
-                    `${days}วัน ${hours.toString().padStart(2, '0')}ชม. ${minutes.toString().padStart(2, '0')}น. ${seconds.toString().padStart(2, '0')}วิ.`;
-            }
-
-            updateTimer();
-            timerInterval = setInterval(updateTimer, 1000);
-        }
-
-        // ฟังก์ชันกดออกจากคีย์ปัจจุบัน เพื่อไปกรอกคีย์อื่น
-        function logoutKey() {
-            clearInterval(timerInterval);
-            
-            // ปิดแผงเหล็กกลไกสลับหน้าจอเพื่อความเท่
-            gates.classList.remove('plates-open');
-            
-            setTimeout(() => {
-                // ลบค่าล็อกอินในเซสชันปัจจุบันออก (แต่ไม่ลบประวัติคีย์ที่เคยแบนในบัญชีดำ)
-                localStorage.removeItem('key_expiry_time');
-                localStorage.removeItem('current_active_key');
-                
-                document.getElementById('access-key').value = ''; // ล้างช่องกรอกคีย์เก่าออกให้คลีนๆ
-                authScreen.style.display = 'block';
-                mainMenu.style.display = 'none';
-                
-                setTimeout(() => {
-                    gates.classList.add('plates-open');
-                }, 300);
-            }, 1000);
-        }
-
-        // ฟังก์ชันแบนคีย์ถาวรเมื่อเวลาหมดลง
-        function handleKeyExpired() {
-            document.getElementById('key-countdown').innerText = "คีย์หมดอายุถาวรแล้ว!";
-            
-            const activeKey = localStorage.getItem('current_active_key');
-            if (activeKey) {
-                let blacklistedKeys = JSON.parse(localStorage.getItem('blacklisted_keys')) || [];
-                if (!blacklistedKeys.includes(activeKey)) {
-                    blacklistedKeys.push(activeKey);
-                    localStorage.setItem('blacklisted_keys', JSON.stringify(blacklistedKeys));
-                }
-            }
-
-            localStorage.removeItem('key_expiry_time');
-            localStorage.removeItem('current_active_key');
-
-            alert('คีย์ของคุณหมดอายุถาวรแล้ว! จะไม่สามารถใช้คีย์คำนี้ได้อีกต่อไป');
-            location.reload();
-        }
-
-        document.addEventListener('keydown', function(event) {
-            if (event.key === 'Enter') {
-                if (document.getElementById('auth-screen').style.display !== 'none') {
-                    verifyKey();
-                }
-            }
-        });
-
-        function updateRange(val) {
-            document.getElementById('range-val').innerText = val + '%';
-        }
-
-        function triggerUpload() { document.getElementById('file-input').click(); }
-        function showFileName(input) {
-            const fileNameDisplay = document.getElementById('file-name');
-            if (input.files && input.files.length > 0) {
-                fileNameDisplay.innerText = "ไฟล์ที่เลือก: " + input.files[0].name;
-            }
-        }
-    </script>
-</body>
-</html>
+                const seconds = Math.Normally I can help with things like this, but I don't seem to have access to that content. You can try again or ask me for something else.
