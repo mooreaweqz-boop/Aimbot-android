@@ -3,21 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>File Selector Component</title>
+    <title>POOH x KAO ADxIOS</title>
+    
+    <!-- ดึงฟอนต์ Mali แสนน่ารักมาจาก Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Mali:wght@500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Mali:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;1,200;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
 
     <style>
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
+            /* กำหนดให้ใช้ฟอนต์ Mali ทั่วทั้งหน้าเว็บ */
             font-family: "Mali", cursive, sans-serif !important;
+            font-weight: 600;
         }
 
         body {
-            background: #090a0f;
+            background: #000000;
             color: #e2e8f0;
             min-height: 100vh;
             display: flex;
@@ -26,25 +30,141 @@
             padding: 20px;
         }
 
-        .upload-card {
+        /* -----------------------------------------
+           [1] AUTHENTICATION UI (หน้ากรอกคีย์)
+        ----------------------------------------- */
+        .auth-card {
+            width: 100%;
+            max-width: 380px;
+            background: rgba(12, 12, 15, 0.95);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 28px;
+            padding: 35px 25px;
+            box-shadow: 0 0 35px rgba(239, 68, 68, 0.2);
+            text-align: center;
+        }
+
+        .logo-circle {
+            width: 110px;
+            height: 110px;
+            margin: 0 auto 20px;
+            border-radius: 50%;
+            border: 2px solid #ef4444;
+            box-shadow: 0 0 20px rgba(239, 68, 68, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #000;
+            overflow: hidden;
+        }
+
+        .logo-circle img {
+            width: 85%;
+            height: 85%;
+            object-fit: contain;
+        }
+
+        .brand-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 6px;
+        }
+        .brand-title span {
+            color: #ef4444;
+        }
+
+        .welcome-subtext {
+            color: #fca5a5;
+            font-size: 0.85rem;
+            margin-bottom: 30px;
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+        }
+
+        .key-input {
+            width: 100%;
+            padding: 16px;
+            background: rgba(22, 22, 26, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 14px;
+            color: #fff;
+            font-size: 0.95rem;
+            text-align: center;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        .key-input:focus {
+            border-color: #ef4444;
+            box-shadow: 0 0 12px rgba(239, 68, 68, 0.4);
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(90deg, #dc2626, #ef4444);
+            border: none;
+            border-radius: 14px;
+            color: #ffffff;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.3s;
+            box-shadow: 0 4px 20px rgba(239, 68, 68, 0.5);
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(239, 68, 68, 0.7);
+        }
+
+        /* -----------------------------------------
+           [2] MAIN FILE SELECTOR UI (หน้าเลือกไฟล์)
+        ----------------------------------------- */
+        .main-card {
+            display: none;
             width: 100%;
             max-width: 420px;
-            background: rgba(13, 27, 42, 0.8);
+            background: rgba(13, 27, 42, 0.85);
             border: 1px solid rgba(0, 240, 255, 0.25);
-            border-radius: 20px;
-            padding: 25px;
+            border-radius: 24px;
+            padding: 30px 25px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(0, 240, 255, 0.05);
         }
 
-        .card-title {
-            font-size: 1.1rem;
-            color: #00f0ff;
-            margin-bottom: 15px;
+        .main-header {
             text-align: center;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .main-header h2 {
+            font-size: 1.4rem;
+            color: #ffffff;
             font-weight: 700;
         }
 
-        /* ปุ่มเลือกแพลตฟอร์ม (Android / iOS) */
+        .main-header p {
+            font-size: 0.8rem;
+            color: #00f0ff;
+        }
+
+        .btn-logout {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            color: #ef4444;
+            padding: 4px 10px;
+            font-size: 0.75rem;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
         .platform-selector {
             display: flex;
             gap: 10px;
@@ -61,11 +181,7 @@
             cursor: pointer;
             font-size: 0.9rem;
             font-weight: 600;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
+            transition: all 0.3s;
         }
 
         .platform-btn.active {
@@ -75,7 +191,6 @@
             box-shadow: 0 0 12px rgba(0, 240, 255, 0.2);
         }
 
-        /* โซนอัปโหลดไฟล์ */
         .drop-zone {
             border: 2px dashed rgba(0, 240, 255, 0.3);
             border-radius: 16px;
@@ -87,47 +202,29 @@
         }
 
         .drop-zone:hover {
-            background: rgba(0, 240, 255, 0.05);
             border-color: #00f0ff;
-        }
-
-        .drop-zone-icon {
-            font-size: 2rem;
-            margin-bottom: 8px;
-        }
-
-        .drop-zone-text {
-            font-size: 0.85rem;
-            color: #94a3b8;
-        }
-
-        .selected-platform-tag {
-            color: #00f0ff;
-            font-weight: 700;
+            background: rgba(0, 240, 255, 0.05);
         }
 
         .file-info {
-            margin-top: 12px;
-            font-size: 0.8rem;
+            margin-top: 10px;
+            font-size: 0.85rem;
             color: #38bdf8;
-            font-weight: 600;
-            word-break: break-all;
         }
 
-        /* ซ่อน input ตัวจริง */
         .hidden-input {
             display: none;
         }
 
         .btn-action {
             width: 100%;
-            margin-top: 15px;
-            padding: 12px;
+            margin-top: 20px;
+            padding: 14px;
             background: linear-gradient(90deg, #0284c7, #00f0ff);
             border: none;
             border-radius: 12px;
             color: #000;
-            font-size: 0.95rem;
+            font-size: 1rem;
             font-weight: 700;
             cursor: pointer;
             transition: 0.3s;
@@ -135,60 +232,94 @@
 
         .btn-action:hover {
             box-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
-            transform: translateY(-2px);
         }
     </style>
 </head>
 <body>
 
-    <div class="upload-card">
-        <div class="card-title">📁 ระบบเลือกและนำเข้าไฟล์</div>
-
-        <!-- ปุ่มเลือกสลับแพลตฟอร์ม -->
-        <div class="platform-selector">
-            <button class="platform-btn active" id="btn-android" onclick="setPlatform('android')">
-                🤖 Android
-            </button>
-            <button class="platform-btn" id="btn-ios" onclick="setPlatform('ios')">
-                🍎 iOS
-            </button>
+    <!-- [1] หน้าเข้าสู่ระบบ / กรอกคีย์ -->
+    <div class="auth-card" id="auth-screen">
+        <div class="logo-circle">
+            <img src="https://cdn.discordapp.com/attachments/1528247158069792863/1528249908845351042/IMG_1880.png" alt="Logo">
         </div>
 
-        <!-- กล่องคลิกเลือกไฟล์ -->
+        <div class="brand-title">POOH x KAO <span>ADxIOS</span></div>
+        <div class="welcome-subtext">✨ ยินดีต้อนรับ! กรุณายืนยันตัวตนนะ ✨</div>
+
+        <div class="input-group">
+            <input type="text" class="key-input" id="access-key" placeholder="🔑 กรอกคีย์เปิดใช้งานระบบที่นี่">
+        </div>
+
+        <button class="btn-submit" onclick="verifyKey()">เปิดระบบเลยยย 🚀</button>
+    </div>
+
+    <!-- [2] หน้าจัดการเลือกไฟล์ -->
+    <div class="main-card" id="main-screen">
+        <div class="main-header">
+            <h2>POOH x KAO DASHBOARD</h2>
+            <p id="key-status-text">สถานะ: กำลังใช้งาน</p>
+            <button class="btn-logout" onclick="logout()">ออกจากระบบ</button>
+        </div>
+
+        <div class="platform-selector">
+            <button class="platform-btn active" id="btn-android" onclick="setPlatform('android')">🤖 Android</button>
+            <button class="platform-btn" id="btn-ios" onclick="setPlatform('ios')">🍎 iOS</button>
+        </div>
+
         <div class="drop-zone" onclick="openFilePicker()">
-            <div class="drop-zone-icon">📥</div>
-            <div class="drop-zone-text">
-                คลิกเพื่อเลือกไฟล์สำหรับ <span id="current-platform-name" class="selected-platform-tag">Android</span>
-            </div>
+            <div style="font-size: 2rem; margin-bottom: 8px;">📁</div>
+            <div>เลือกไฟล์สำหรับระบบ <span id="current-platform" style="color:#00f0ff; font-weight:bold;">Android</span></div>
             <div class="file-info" id="file-name-display">ยังไม่ได้เลือกไฟล์</div>
         </div>
 
-        <!-- Input ซ่อน (ใช้สำหรับ Android และ iOS แยกตามนามสกุลได้) -->
-        <input type="file" id="input-android" class="hidden-input" accept=".zip,.bin,.json,.txt" onchange="handleFileSelect(this)">
-        <input type="file" id="input-ios" class="hidden-input" accept=".zip,.plist,.json,.txt" onchange="handleFileSelect(this)">
+        <input type="file" id="input-android" class="hidden-input" accept=".zip,.bin,.json" onchange="handleFileSelect(this)">
+        <input type="file" id="input-ios" class="hidden-input" accept=".zip,.plist,.json" onchange="handleFileSelect(this)">
 
-        <button class="btn-action" onclick="processSelectedFile()">▶ ดำเนินการกับไฟล์</button>
+        <button class="btn-action" onclick="runFile()">▶ รันไฟล์ที่เลือก</button>
     </div>
 
     <script>
         let currentPlatform = 'android';
+        const keyPattern = /^pooh-\d*(day|hr|inf)-proxy\d{1,10}$/;
 
-        // สลับแพลตฟอร์มระหว่าง Android และ iOS
-        function setPlatform(platform) {
-            currentPlatform = platform;
-            
-            document.getElementById('btn-android').classList.toggle('active', platform === 'android');
-            document.getElementById('btn-ios').classList.toggle('active', platform === 'ios');
-            
-            document.getElementById('current-platform-name').innerText = platform === 'android' ? 'Android' : 'iOS';
-            document.getElementById('file-name-display').innerText = 'ยังไม่ได้เลือกไฟล์';
-            
-            // ล้างค่าอินพุตเมื่อสลับค่าย
-            document.getElementById('input-android').value = '';
-            document.getElementById('input-ios').value = '';
+        window.onload = function() {
+            const savedKey = localStorage.getItem('active_key');
+            if (savedKey && keyPattern.test(savedKey)) {
+                showMainScreen();
+            }
+        };
+
+        function verifyKey() {
+            const inputVal = document.getElementById('access-key').value.trim();
+
+            if (keyPattern.test(inputVal)) {
+                localStorage.setItem('active_key', inputVal);
+                showMainScreen();
+            } else {
+                alert('รูปแบบคีย์ไม่ถูกต้อง!\nตัวอย่าง: pooh-1day-proxy1234 หรือ pooh-12hr-proxy1 หรือ pooh-inf-proxy99');
+            }
         }
 
-        // เรียกเปิดตัวเลือกไฟล์ตามแพลตฟอร์มที่เลือก
+        function showMainScreen() {
+            document.getElementById('auth-screen').style.display = 'none';
+            document.getElementById('main-screen').style.display = 'block';
+        }
+
+        function logout() {
+            localStorage.removeItem('active_key');
+            document.getElementById('main-screen').style.display = 'none';
+            document.getElementById('auth-screen').style.display = 'block';
+            document.getElementById('access-key').value = '';
+        }
+
+        function setPlatform(platform) {
+            currentPlatform = platform;
+            document.getElementById('btn-android').classList.toggle('active', platform === 'android');
+            document.getElementById('btn-ios').classList.toggle('active', platform === 'ios');
+            document.getElementById('current-platform').innerText = platform === 'android' ? 'Android' : 'iOS';
+            document.getElementById('file-name-display').innerText = 'ยังไม่ได้เลือกไฟล์';
+        }
+
         function openFilePicker() {
             if (currentPlatform === 'android') {
                 document.getElementById('input-android').click();
@@ -197,29 +328,26 @@
             }
         }
 
-        // แสดงชื่อไฟล์เมื่อผู้ใช้เลือกไฟล์
         function handleFileSelect(input) {
-            const nameDisplay = document.getElementById('file-name-display');
+            const display = document.getElementById('file-name-display');
             if (input.files && input.files.length > 0) {
-                nameDisplay.innerText = "ไฟล์ที่เลือก: " + input.files[0].name;
+                display.innerText = "ไฟล์ที่เลือก: " + input.files[0].name;
             } else {
-                nameDisplay.innerText = "ยังไม่ได้เลือกไฟล์";
+                display.innerText = "ยังไม่ได้เลือกไฟล์";
             }
         }
 
-        // ตัวอย่างฟังก์ชันสำหรับส่งไฟล์ไปประมวลผลต่อ
-        function processSelectedFile() {
-            const activeInput = currentPlatform === 'android' 
+        function runFile() {
+            const input = currentPlatform === 'android' 
                 ? document.getElementById('input-android') 
                 : document.getElementById('input-ios');
 
-            if (activeInput.files && activeInput.files.length > 0) {
-                alert(`โหลดไฟล์ [${activeInput.files[0].name}] สำหรับระบบ ${currentPlatform.toUpperCase()} เรียบร้อยแล้ว`);
+            if (input.files && input.files.length > 0) {
+                alert(`โหลดไฟล์ ${input.files[0].name} สำหรับระบบ ${currentPlatform.toUpperCase()} เรียบร้อยแล้ว`);
             } else {
-                alert('กรุณาเลือกไฟล์ก่อนทำการกดดำเนินการ');
+                alert('กรุณาเลือกไฟล์ก่อนกดรัน');
             }
         }
     </script>
-
 </body>
 </html>
