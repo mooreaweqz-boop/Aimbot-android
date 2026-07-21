@@ -42,7 +42,6 @@
             justify-content: center;
         }
 
-        /* วงแหวนไฟวิ่งหมุนวน */
         .logo-wrapper::before {
             content: '';
             position: absolute;
@@ -58,7 +57,6 @@
             100% { transform: rotate(360deg); }
         }
 
-        /* กล่องครอบรูปภาพด้านในเพื่อบดขอบให้ได้รูปวงกลมพอดี */
         .logo-inner {
             position: relative;
             width: 112px;
@@ -75,7 +73,7 @@
         .logo-inner img {
             width: 100%;
             height: 100%;
-            object-fit: cover; /* ปรับรูปภาพให้ขยายเต็มพอดีกับวงกลม */
+            object-fit: cover;
         }
 
         /* -----------------------------------------
@@ -143,7 +141,7 @@
         }
 
         /* -----------------------------------------
-           [3] DASHBOARD & FILE SELECTOR UI
+           [3] DASHBOARD UI
         ----------------------------------------- */
         .main-card {
             display: none;
@@ -191,7 +189,6 @@
             cursor: pointer;
         }
 
-        /* ปุ่มเลือกโหมดฟังก์ชัน (VIPFF, VIPFFM, VIPFPS) */
         .mode-selector {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -219,7 +216,6 @@
             box-shadow: 0 0 10px rgba(239, 68, 68, 0.3);
         }
 
-        /* ปุ่มเลือกแพลตฟอร์ม (Android / iOS) */
         .platform-selector {
             display: flex;
             gap: 10px;
@@ -245,7 +241,6 @@
             box-shadow: 0 0 10px rgba(0, 240, 255, 0.2);
         }
 
-        /* โซนเลือกไฟล์ */
         .drop-zone {
             border: 2px dashed rgba(0, 240, 255, 0.3);
             border-radius: 16px;
@@ -288,7 +283,7 @@
 </head>
 <body>
 
-    <!-- [1] หน้าเข้าสู่ระบบ / กรอกคีย์ -->
+    <!-- [1] หน้ากรอกคีย์ -->
     <div class="auth-card" id="auth-screen">
         <div class="logo-wrapper">
             <div class="logo-inner">
@@ -303,7 +298,7 @@
         <button class="btn-submit" onclick="verifyKey()">เปิดระบบเลยยย 🚀</button>
     </div>
 
-    <!-- [2] หน้าจัดการหลัก -->
+    <!-- [2] หน้า Dashboard -->
     <div class="main-card" id="main-screen">
         <div class="main-header">
             <h2>POOH x KAO DASHBOARD</h2>
@@ -313,20 +308,17 @@
             <button class="btn-logout" onclick="logout()">ออกจากระบบ</button>
         </div>
 
-        <!-- ตัวเลือกโหมดฟังก์ชัน VIP -->
         <div class="mode-selector">
             <button class="mode-btn active" id="mode-vipff" onclick="selectMode('VIPFF')">VIPFF</button>
             <button class="mode-btn" id="mode-vipffm" onclick="selectMode('VIPFFM')">VIPFFM</button>
             <button class="mode-btn" id="mode-vipfps" onclick="selectMode('VIPFPS')">VIPFPS</button>
         </div>
 
-        <!-- ตัวเลือกแพลตฟอร์มระบบปฏิบัติการ -->
         <div class="platform-selector">
             <button class="platform-btn active" id="btn-android" onclick="setPlatform('android')">🤖 Android</button>
             <button class="platform-btn" id="btn-ios" onclick="setPlatform('ios')">🍎 iOS</button>
         </div>
 
-        <!-- โซนเลือกไฟล์ -->
         <div class="drop-zone" onclick="openFilePicker()">
             <div style="font-size: 1.8rem; margin-bottom: 5px;">📁</div>
             <div>เลือกไฟล์สำหรับระบบ <span id="current-platform" style="color:#00f0ff; font-weight:bold;">Android</span></div>
@@ -352,12 +344,6 @@
         function checkExistingSession() {
             const savedKey = localStorage.getItem('active_key');
             const savedExpiry = localStorage.getItem('key_expiry_time');
-            const expiredKeys = JSON.parse(localStorage.getItem('expired_keys') || '[]');
-
-            if (savedKey && expiredKeys.includes(savedKey)) {
-                clearSession();
-                return;
-            }
 
             if (savedKey && savedExpiry) {
                 if (savedExpiry === 'inf') {
@@ -367,7 +353,7 @@
                     if (remaining > 0) {
                         showMainScreen(parseInt(savedExpiry));
                     } else {
-                        invalidateKey(savedKey);
+                        invalidateKey();
                     }
                 }
             }
@@ -375,14 +361,8 @@
 
         function verifyKey() {
             const inputVal = document.getElementById('access-key').value.trim();
-            const expiredKeys = JSON.parse(localStorage.getItem('expired_keys') || '[]');
-
-            if (expiredKeys.includes(inputVal)) {
-                alert('คีย์นี้หมดอายุการใช้งานแล้ว ไม่สามารถใช้งานได้อีก');
-                return;
-            }
-
             const match = inputVal.match(keyPattern);
+
             if (match) {
                 const amountStr = match[1];
                 const unit = match[2];
@@ -427,12 +407,12 @@
 
                 if (distance <= 0) {
                     clearInterval(countdownTimer);
-                    const currentKey = localStorage.getItem('active_key');
-                    if (currentKey) invalidateKey(currentKey);
+                    alert('เวลาการใช้งานของคุณหมดอายุแล้ว!');
+                    invalidateKey();
                     return;
                 }
 
                 const days = Math.floor(distance / (1000 * 60 * 60 * 24));
                 const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
                 const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-                const seconds = Math.floor((distance % (1Normally I can help with things like this, but I don't seem to have access to that content. You can try again or ask me for something else.
+                const seconds = Math.floor((distance % (1000 * 60)) /Normally I can help with things like this, but I don't seem to have access to that content. You can try again or ask me for something else.
