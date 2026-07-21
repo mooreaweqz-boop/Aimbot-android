@@ -141,10 +141,10 @@
         }
 
         /* -----------------------------------------
-           [3] DASHBOARD UI
+           [3] DASHBOARD UI (หน้าเลือกไฟล์)
         ----------------------------------------- */
         .main-card {
-            display: none;
+            display: none; /* ซ่อนไว้ก่อน ย้อนสลับเมื่อคีย์ผ่าน */
             width: 100%;
             max-width: 420px;
             background: rgba(13, 27, 42, 0.9);
@@ -250,6 +250,7 @@
             background: rgba(0, 240, 255, 0.01);
             transition: 0.3s;
         }
+
         .drop-zone:hover {
             border-color: #00f0ff;
             background: rgba(0, 240, 255, 0.05);
@@ -276,6 +277,7 @@
             cursor: pointer;
             transition: 0.3s;
         }
+
         .btn-action:hover {
             box-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
         }
@@ -287,7 +289,7 @@
     <div class="auth-card" id="auth-screen">
         <div class="logo-wrapper">
             <div class="logo-inner">
-                <img src="https://cdn.discordapp.com/attachments/1528247158069792863/1528249908845351042/IMG_1880.png?ex=6a5d9d23&is=6a5c4ba3&hm=1258cef0d3504e6bfe263a18198e3ae78fd2238c6bd69536c54b77deba2388a1&" alt="Logo">
+                <img src="https://cdn.discordapp.com/attachments/1528247158069792863/1528249908845351042/IMG_1880.png" alt="Logo">
             </div>
         </div>
 
@@ -308,17 +310,20 @@
             <button class="btn-logout" onclick="logout()">ออกจากระบบ</button>
         </div>
 
+        <!-- ตัวเลือกโหมดฟังก์ชัน -->
         <div class="mode-selector">
             <button class="mode-btn active" id="mode-vipff" onclick="selectMode('VIPFF')">VIPFF</button>
             <button class="mode-btn" id="mode-vipffm" onclick="selectMode('VIPFFM')">VIPFFM</button>
             <button class="mode-btn" id="mode-vipfps" onclick="selectMode('VIPFPS')">VIPFPS</button>
         </div>
 
+        <!-- ตัวเลือกแพลตฟอร์ม -->
         <div class="platform-selector">
             <button class="platform-btn active" id="btn-android" onclick="setPlatform('android')">🤖 Android</button>
             <button class="platform-btn" id="btn-ios" onclick="setPlatform('ios')">🍎 iOS</button>
         </div>
 
+        <!-- โซนเลือกไฟล์ -->
         <div class="drop-zone" onclick="openFilePicker()">
             <div style="font-size: 1.8rem; margin-bottom: 5px;">📁</div>
             <div>เลือกไฟล์สำหรับระบบ <span id="current-platform" style="color:#00f0ff; font-weight:bold;">Android</span></div>
@@ -331,16 +336,22 @@
         <button class="btn-action" onclick="runFile()">▶ รันไฟล์ที่เลือก</button>
     </div>
 
+    <!-- -----------------------------------------
+       JAVASCRIPT LOGIC
+    ----------------------------------------- -->
     <script>
         let currentPlatform = 'android';
         let currentMode = 'VIPFF';
         let countdownTimer = null;
+        
+        // รูปแบบคีย์: pooh-[ตัวเลข](day|hr|inf)-proxy[ตัวเลข 1-10 หลัก]
         const keyPattern = /^pooh-(\d*)(day|hr|inf)-proxy\d{1,10}$/;
 
         window.onload = function() {
             checkExistingSession();
         };
 
+        // ตรวจสอบคีย์ที่เคยบันทึกไว้เมื่อเปิดหน้าเว็บ
         function checkExistingSession() {
             const savedKey = localStorage.getItem('active_key');
             const savedExpiry = localStorage.getItem('key_expiry_time');
@@ -359,6 +370,7 @@
             }
         }
 
+        // ฟังก์ชันยืนยันคีย์เมื่อกดปุ่ม
         function verifyKey() {
             const inputVal = document.getElementById('access-key').value.trim();
             const match = inputVal.match(keyPattern);
@@ -387,12 +399,14 @@
             }
         }
 
+        // ฟังก์ชันสั่งเปลี่ยนหน้าจอไปยัง Dashboard
         function showMainScreen(expiryTime) {
             document.getElementById('auth-screen').style.display = 'none';
             document.getElementById('main-screen').style.display = 'block';
             startCountdown(expiryTime);
         }
 
+        // นับเวลาถอยหลังของคีย์
         function startCountdown(expiryTime) {
             if (countdownTimer) clearInterval(countdownTimer);
 
@@ -415,4 +429,79 @@
                 const days = Math.floor(distance / (1000 * 60 * 60 * 24));
                 const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
                 const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-                const seconds = Math.floor((distance % (1000 * 60)) /Normally I can help with things like this, but I don't seem to have access to that content. You can try again or ask me for something else.
+                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                let text = "";
+                if (days > 0) text += days + " วัน ";
+                if (hours > 0 || days > 0) text += hours + " ชม. ";
+                text += minutes + " นาที " + seconds + " วินาที";
+
+                document.getElementById('countdown-text').innerText = text;
+            }
+
+            updateDisplay();
+            countdownTimer = setInterval(updateDisplay, 1000);
+        }
+
+        // ล้างสิทธิ์การใช้งานเมื่อหมดเวลาหรือออกจากระบบ
+        function invalidateKey() {
+            localStorage.removeItem('active_key');
+            localStorage.removeItem('key_expiry_time');
+            if (countdownTimer) clearInterval(countdownTimer);
+            document.getElementById('main-screen').style.display = 'none';
+            document.getElementById('auth-screen').style.display = 'block';
+            document.getElementById('access-key').value = '';
+        }
+
+        function logout() {
+            invalidateKey();
+        }
+
+        // ฟังก์ชันสลับโหมด (VIPFF, VIPFFM, VIPFPS)
+        function selectMode(modeName) {
+            currentMode = modeName;
+            document.getElementById('mode-vipff').classList.toggle('active', modeName === 'VIPFF');
+            document.getElementById('mode-vipffm').classList.toggle('active', modeName === 'VIPFFM');
+            document.getElementById('mode-vipfps').classList.toggle('active', modeName === 'VIPFPS');
+        }
+
+        // ฟังก์ชันสลับแพลตฟอร์ม (Android, iOS)
+        function setPlatform(platform) {
+            currentPlatform = platform;
+            document.getElementById('btn-android').classList.toggle('active', platform === 'android');
+            document.getElementById('btn-ios').classList.toggle('active', platform === 'ios');
+            document.getElementById('current-platform').innerText = platform === 'android' ? 'Android' : 'iOS';
+            document.getElementById('file-name-display').innerText = 'ยังไม่ได้เลือกไฟล์';
+        }
+
+        function openFilePicker() {
+            if (currentPlatform === 'android') {
+                document.getElementById('input-android').click();
+            } else {
+                document.getElementById('input-ios').click();
+            }
+        }
+
+        function handleFileSelect(input) {
+            const display = document.getElementById('file-name-display');
+            if (input.files && input.files.length > 0) {
+                display.innerText = "ไฟล์ที่เลือก: " + input.files[0].name;
+            } else {
+                display.innerText = "ยังไม่ได้เลือกไฟล์";
+            }
+        }
+
+        function runFile() {
+            const input = currentPlatform === 'android' 
+                ? document.getElementById('input-android') 
+                : document.getElementById('input-ios');
+
+            if (input.files && input.files.length > 0) {
+                alert(`กำลังประมวลผลไฟล์ ${input.files[0].name}\nโหมด: ${currentMode}\nระบบ: ${currentPlatform.toUpperCase()}`);
+            } else {
+                alert('กรุณาเลือกไฟล์ก่อนกดรัน');
+            }
+        }
+    </script>
+</body>
+</html>
