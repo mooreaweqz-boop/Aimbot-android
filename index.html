@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>POOH x KAO ADxIOS</title>
     
-    <!-- ดึงฟอนต์ Mali แสนน่ารักมาจาก Google Fonts -->
+    <!-- ดึงฟอนต์ Mali จาก Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Mali:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;1,200;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
@@ -15,7 +15,6 @@
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            /* กำหนดให้ใช้ฟอนต์ Mali ทั่วทั้งหน้าเว็บ */
             font-family: "Mali", cursive, sans-serif !important;
             font-weight: 600;
         }
@@ -59,8 +58,8 @@
         }
 
         .logo-circle img {
-            width: 85%;
-            height: 85%;
+            width: 90%;
+            height: 90%;
             object-fit: contain;
         }
 
@@ -147,9 +146,15 @@
             font-weight: 700;
         }
 
-        .main-header p {
-            font-size: 0.8rem;
+        .timer-badge {
+            margin-top: 8px;
+            padding: 8px 12px;
+            background: rgba(0, 240, 255, 0.1);
+            border: 1px solid rgba(0, 240, 255, 0.3);
+            border-radius: 10px;
+            font-size: 0.85rem;
             color: #00f0ff;
+            display: inline-block;
         }
 
         .btn-logout {
@@ -169,6 +174,7 @@
             display: flex;
             gap: 10px;
             margin-bottom: 20px;
+            margin-top: 15px;
         }
 
         .platform-btn {
@@ -240,7 +246,7 @@
     <!-- [1] หน้าเข้าสู่ระบบ / กรอกคีย์ -->
     <div class="auth-card" id="auth-screen">
         <div class="logo-circle">
-            <img src="https://cdn.discordapp.com/attachments/1528247158069792863/1528249908845351042/IMG_1880.png" alt="Logo">
+            <img src="https://cdn.discordapp.com/attachments/1528247158069792863/1528249908845351042/IMG_1880.png?ex=6a5d9d23&is=6a5c4ba3&hm=1258cef0d3504e6bfe263a18198e3ae78fd2238c6bd69536c54b77deba2388a1&" alt="Logo">
         </div>
 
         <div class="brand-title">POOH x KAO <span>ADxIOS</span></div>
@@ -257,7 +263,9 @@
     <div class="main-card" id="main-screen">
         <div class="main-header">
             <h2>POOH x KAO DASHBOARD</h2>
-            <p id="key-status-text">สถานะ: กำลังใช้งาน</p>
+            <div class="timer-badge">
+                เวลาคงเหลือ: <span id="countdown-text">กำลังโหลด...</span>
+            </div>
             <button class="btn-logout" onclick="logout()">ออกจากระบบ</button>
         </div>
 
@@ -280,74 +288,103 @@
 
     <script>
         let currentPlatform = 'android';
-        const keyPattern = /^pooh-\d*(day|hr|inf)-proxy\d{1,10}$/;
+        let countdownTimer = null;
+        const keyPattern = /^pooh-(\d*)(day|hr|inf)-proxy\d{1,10}$/;
 
         window.onload = function() {
-            const savedKey = localStorage.getItem('active_key');
-            if (savedKey && keyPattern.test(savedKey)) {
-                showMainScreen();
-            }
+            checkExistingSession();
         };
+
+        function checkExistingSession() {
+            const savedKey = localStorage.getItem('active_key');
+            const savedExpiry = localStorage.getItem('key_expiry_time');
+            const expiredKeys = JSON.parse(localStorage.getItem('expired_keys') || '[]');
+
+            if (savedKey && expiredKeys.includes(savedKey)) {
+                clearSession();
+                return;
+            }
+
+            if (savedKey && savedExpiry) {
+                if (savedExpiry === 'inf') {
+                    showMainScreen('inf');
+                } else {
+                    const remaining = parseInt(savedExpiry) - new Date().getTime();
+                    if (remaining > 0) {
+                        showMainScreen(parseInt(savedExpiry));
+                    } else {
+                        invalidateKey(savedKey);
+                    }
+                }
+            }
+        }
 
         function verifyKey() {
             const inputVal = document.getElementById('access-key').value.trim();
+            const expiredKeys = JSON.parse(localStorage.getItem('expired_keys') || '[]');
 
-            if (keyPattern.test(inputVal)) {
+            if (expiredKeys.includes(inputVal)) {
+                alert('คีย์นี้หมดอายุการใช้งานแล้ว ไม่สามารถใช้งานได้อีก');
+                return;
+            }
+
+            const match = inputVal.match(keyPattern);
+            if (match) {
+                const amountStr = match[1];
+                const unit = match[2];
+                let expiryTime;
+
+                if (unit === 'inf') {
+                    expiryTime = 'inf';
+                } else {
+                    const amount = amountStr ? parseInt(amountStr) : 1;
+                    let durationMs = 0;
+                    if (unit === 'day') {
+                        durationMs = amount * 24 * 60 * 60 * 1000;
+                    } else if (unit === 'hr') {
+                        durationMs = amount * 60 * 60 * 1000;
+                    }
+                    expiryTime = new Date().getTime() + durationMs;
+                }
+
                 localStorage.setItem('active_key', inputVal);
-                showMainScreen();
+                localStorage.setItem('key_expiry_time', expiryTime);
+                showMainScreen(expiryTime);
             } else {
-                alert('รูปแบบคีย์ไม่ถูกต้อง!\nตัวอย่าง: pooh-1day-proxy1234 หรือ pooh-12hr-proxy1 หรือ pooh-inf-proxy99');
+                alert('รูปแบบคีย์ไม่ถูกต้อง! กรุณาตรวจสอบและลองใหม่อีกครั้ง');
             }
         }
 
-        function showMainScreen() {
+        function showMainScreen(expiryTime) {
             document.getElementById('auth-screen').style.display = 'none';
             document.getElementById('main-screen').style.display = 'block';
+            startCountdown(expiryTime);
         }
 
-        function logout() {
-            localStorage.removeItem('active_key');
-            document.getElementById('main-screen').style.display = 'none';
-            document.getElementById('auth-screen').style.display = 'block';
-            document.getElementById('access-key').value = '';
-        }
+        function startCountdown(expiryTime) {
+            if (countdownTimer) clearInterval(countdownTimer);
 
-        function setPlatform(platform) {
-            currentPlatform = platform;
-            document.getElementById('btn-android').classList.toggle('active', platform === 'android');
-            document.getElementById('btn-ios').classList.toggle('active', platform === 'ios');
-            document.getElementById('current-platform').innerText = platform === 'android' ? 'Android' : 'iOS';
-            document.getElementById('file-name-display').innerText = 'ยังไม่ได้เลือกไฟล์';
-        }
-
-        function openFilePicker() {
-            if (currentPlatform === 'android') {
-                document.getElementById('input-android').click();
-            } else {
-                document.getElementById('input-ios').click();
+            if (expiryTime === 'inf') {
+                document.getElementById('countdown-text').innerText = 'ถาวร (ตลอดชีพ)';
+                return;
             }
-        }
 
-        function handleFileSelect(input) {
-            const display = document.getElementById('file-name-display');
-            if (input.files && input.files.length > 0) {
-                display.innerText = "ไฟล์ที่เลือก: " + input.files[0].name;
-            } else {
-                display.innerText = "ยังไม่ได้เลือกไฟล์";
-            }
-        }
+            function updateDisplay() {
+                const now = new Date().getTime();
+                const distance = expiryTime - now;
 
-        function runFile() {
-            const input = currentPlatform === 'android' 
-                ? document.getElementById('input-android') 
-                : document.getElementById('input-ios');
+                if (distance <= 0) {
+                    clearInterval(countdownTimer);
+                    const currentKey = localStorage.getItem('active_key');
+                    if (currentKey) {
+                        invalidateKey(currentKey);
+                    }
+                    return;
+                }
 
-            if (input.files && input.files.length > 0) {
-                alert(`โหลดไฟล์ ${input.files[0].name} สำหรับระบบ ${currentPlatform.toUpperCase()} เรียบร้อยแล้ว`);
-            } else {
-                alert('กรุณาเลือกไฟล์ก่อนกดรัน');
-            }
-        }
-    </script>
-</body>
-</html>
+                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+Normally I can help with things like this, but I don't seem to have access to that content. You can try again or ask me for something else.
