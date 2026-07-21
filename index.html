@@ -3,220 +3,125 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AIMBOT-android</title>
-    
-    <!-- ดึงฟอนต์ Mali แสนน่ารักมาจาก Google Fonts -->
+    <title>File Selector Component</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Mali:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;1,200;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Mali:wght@500;600;700&display=swap" rel="stylesheet">
 
     <style>
-        /* -----------------------------------------
-           [1] GLOBAL STYLES & BACKGROUND
-        ----------------------------------------- */
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
             font-family: "Mali", cursive, sans-serif !important;
-            font-weight: 600;
         }
 
         body {
-            background: #000;
+            background: #090a0f;
             color: #e2e8f0;
             min-height: 100vh;
             display: flex;
             justify-content: center;
-            align-items: flex-start;
+            align-items: center;
             padding: 20px;
-            overflow-x: hidden;
         }
 
-        /* -----------------------------------------
-           [2] MECHANIC PLATES (แผงเหล็กกลไกสลับหน้า)
-        ----------------------------------------- */
-        .intro-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
+        .upload-card {
             width: 100%;
-            height: 100vh;
-            z-index: 9999;
-            pointer-events: none;
-        }
-        .plate-left, .plate-right {
-            position: absolute;
-            top: 0;
-            width: 50%;
-            height: 100%;
-            background: linear-gradient(135deg, #0f172a, #1e293b);
-            border-color: #ef4444;
-            box-shadow: 0 0 30px rgba(239, 68, 68, 0.2);
-            transition: transform 1s cubic-bezier(0.77, 0, 0.175, 1), opacity 0.8s;
-        }
-        .plate-left { left: 0; border-right: 3px solid #ef4444; transform: translateX(0); }
-        .plate-right { right: 0; border-left: 3px solid #ef4444; transform: translateX(0); }
-
-        .plates-open .plate-left { transform: translateX(-105%) skewX(-5deg); opacity: 0; }
-        .plates-open .plate-right { transform: translateX(105%) skewX(5deg); opacity: 0; }
-
-        /* -----------------------------------------
-           [3] AUTHENTICATION UI (หน้ากรอกคีย์ แดง-ดำ)
-        ----------------------------------------- */
-        .auth-container {
-            width: 100%;
-            max-width: 400px;
-            background: rgba(10, 10, 10, 0.85);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            border: 2px solid rgba(239, 68, 68, 0.4);
-            border-radius: 24px;
-            padding: 40px 25px;
-            box-shadow: 0 0 40px rgba(239, 68, 68, 0.15), inset 0 0 20px rgba(0, 0, 0, 0.8);
-            margin-top: 60px;
-            text-align: center;
-            display: block;
-            z-index: 10;
+            max-width: 420px;
+            background: rgba(13, 27, 42, 0.8);
+            border: 1px solid rgba(0, 240, 255, 0.25);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(0, 240, 255, 0.05);
         }
 
-        .auth-text-logo {
-            font-size: 2.3rem;
-            font-weight: 700;
-            color: #fff;
-            text-shadow: 0 0 15px rgba(239, 68, 68, 0.6);
-            margin-bottom: 5px;
-            letter-spacing: 1px;
-        }
-        .auth-text-logo span { color: #ef4444; }
-        .auth-container p { color: #94a3b8; font-size: 0.95rem; margin-top: 5px; margin-bottom: 35px;}
-
-        .key-input-field {
-            width: 100%;
-            padding: 16px;
-            background: rgba(20, 20, 20, 0.8);
-            border: 1px solid rgba(239, 68, 68, 0.3);
-            border-radius: 12px;
-            color: #fff;
+        .card-title {
             font-size: 1.1rem;
+            color: #00f0ff;
+            margin-bottom: 15px;
             text-align: center;
-            outline: none;
-            transition: 0.3s;
+            font-weight: 700;
+        }
+
+        /* ปุ่มเลือกแพลตฟอร์ม (Android / iOS) */
+        .platform-selector {
+            display: flex;
+            gap: 10px;
             margin-bottom: 20px;
         }
-        .key-input-field:focus {
-            border-color: #ef4444;
-            box-shadow: 0 0 15px rgba(239, 68, 68, 0.4);
-        }
 
-        .btn-auth {
-            width: 100%;
-            padding: 16px;
-            background: linear-gradient(90deg, #b91c1c, #ef4444);
-            border: none;
-            border-radius: 12px;
-            color: white;
-            font-size: 1.1rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: 0.3s;
-            box-shadow: 0 5px 15px rgba(239, 68, 68, 0.4);
-        }
-        .btn-auth:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(239, 68, 68, 0.6);
-        }
-
-        /* -----------------------------------------
-           [4] MAIN MENU UI (หน้าฟังก์ชันหลัก - ฟ้านีออน)
-        ----------------------------------------- */
-        .menu-container {
-            width: 100%;
-            max-width: 450px;
-            background: rgba(13, 27, 42, 0.65);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            border: 1px solid rgba(0, 240, 255, 0.15);
-            border-radius: 24px;
-            padding: 25px;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 0 0 40px rgba(0, 240, 255, 0.05);
-            margin-top: 20px;
-            display: none;
-            z-index: 10;
-            position: relative;
-        }
-
-        .menu-header { text-align: center; margin-bottom: 20px; position: relative; }
-        .menu-header h1 { font-size: 1.9rem; color: #fff; text-shadow: 0 0 10px rgba(0, 240, 255, 0.5); font-weight: 700; }
-        .menu-header p { font-size: 0.8rem; color: #00f0ff; letter-spacing: 2px; margin-top: 5px; font-weight: bold; }
-        
-        .btn-logout {
-            position: absolute;
-            top: 0;
-            right: 0;
-            background: rgba(239, 68, 68, 0.1);
-            border: 1px solid rgba(239, 68, 68, 0.4);
-            color: #ef4444;
-            padding: 5px 10px;
-            font-size: 0.75rem;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-        .btn-logout:hover {
-            background: #ef4444;
-            color: #fff;
-            box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
-        }
-
-        .timer-box {
-            background: rgba(0, 240, 255, 0.08);
-            border: 1px solid rgba(0, 240, 255, 0.3);
-            border-radius: 12px;
-            padding: 10px;
-            text-align: center;
-            margin-bottom: 15px;
-            font-size: 0.9rem;
-            color: #fff;
-        }
-        .timer-box span { color: #00f0ff; font-weight: bold; font-size: 1rem; }
-        .section-title { font-size: 0.85rem; color: #64748b; text-transform: uppercase; letter-spacing: 1px; margin: 20px 0 12px 5px; }
-
-        .function-card {
+        .platform-btn {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
             background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 16px;
-            padding: 16px;
-            margin-bottom: 12px;
+            color: #94a3b8;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
-        .flex-row { display: flex; align-items: center; justify-content: space-between; }
-        .info-area { display: flex; align-items: center; gap: 12px; }
-        .icon { width: 38px; height: 38px; background: rgba(0, 240, 255, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #00f0ff; font-size: 1.2rem; }
-        .text-group .title { font-size: 1rem; font-weight: 700; color: #fff; }
-        .text-group .subtitle { font-size: 0.8rem; color: #94a3b8; margin-top: 2px; }
 
-        .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
-        .switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #334155; transition: .3s; border-radius: 24px; }
-        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .3s; border-radius: 50%; }
-        input:checked + .slider { background-color: #00f0ff; box-shadow: 0 0 10px rgba(0, 240, 255, 0.4); }
-        input:checked + .slider:before { transform: translateX(20px); }
-        .range-container { margin-top: 12px; display: flex; align-items: center; gap: 15px; }
-        .range-slider { -webkit-appearance: none; width: 100%; height: 4px; border-radius: 2px; background: #334155; outline: none; }
-        .range-slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 14px; height: 14px; border-radius: 50%; background: #00f0ff; cursor: pointer; box-shadow: 0 0 8px #00f0ff; }
-        .range-value { font-size: 0.85rem; color: #00f0ff; font-weight: bold; min-width: 30px; text-align: right; }
+        .platform-btn.active {
+            background: rgba(0, 240, 255, 0.15);
+            border-color: #00f0ff;
+            color: #00f0ff;
+            box-shadow: 0 0 12px rgba(0, 240, 255, 0.2);
+        }
 
-        /* File Upload & Execution */
-        .file-upload-box { border: 2px dashed rgba(0, 240, 255, 0.3); border-radius: 16px; padding: 20px; text-align: center; cursor: pointer; background: rgba(0, 240, 255, 0.01); }
-        .file-upload-box p { font-size: 0.9rem; color: #94a3b8; margin-top: 5px; }
-        .file-upload-box span { color: #00f0ff; font-weight: bold; }
-        #file-input { display: none; }
-        .os-badges { display: flex; justify-content: center; gap: 10px; margin-top: 10px; }
-        .badge { font-size: 0.7rem; padding: 3px 8px; border-radius: 5px; background: rgba(255, 255, 255, 0.05); color: #64748b; border: 1px solid rgba(255, 255, 255, 0.1); }
+        /* โซนอัปโหลดไฟล์ */
+        .drop-zone {
+            border: 2px dashed rgba(0, 240, 255, 0.3);
+            border-radius: 16px;
+            padding: 25px 15px;
+            text-align: center;
+            cursor: pointer;
+            background: rgba(0, 240, 255, 0.01);
+            transition: 0.3s;
+        }
 
-        .btn-run-file {
-            width: 100%;
+        .drop-zone:hover {
+            background: rgba(0, 240, 255, 0.05);
+            border-color: #00f0ff;
+        }
+
+        .drop-zone-icon {
+            font-size: 2rem;
+            margin-bottom: 8px;
+        }
+
+        .drop-zone-text {
+            font-size: 0.85rem;
+            color: #94a3b8;
+        }
+
+        .selected-platform-tag {
+            color: #00f0ff;
+            font-weight: 700;
+        }
+
+        .file-info {
             margin-top: 12px;
+            font-size: 0.8rem;
+            color: #38bdf8;
+            font-weight: 600;
+            word-break: break-all;
+        }
+
+        /* ซ่อน input ตัวจริง */
+        .hidden-input {
+            display: none;
+        }
+
+        .btn-action {
+            width: 100%;
+            margin-top: 15px;
             padding: 12px;
             background: linear-gradient(90deg, #0284c7, #00f0ff);
             border: none;
@@ -226,252 +131,95 @@
             font-weight: 700;
             cursor: pointer;
             transition: 0.3s;
-            box-shadow: 0 0 15px rgba(0, 240, 255, 0.3);
         }
-        .btn-run-file:hover {
+
+        .btn-action:hover {
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
             transform: translateY(-2px);
-            box-shadow: 0 0 25px rgba(0, 240, 255, 0.5);
-        }
-
-        /* Game Launcher Grid */
-        .game-launcher-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-top: 10px;
-        }
-
-        .game-card {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(0, 240, 255, 0.2);
-            border-radius: 16px;
-            padding: 12px;
-            text-align: center;
-            cursor: pointer;
-            transition: 0.3s;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .game-card:hover {
-            background: rgba(0, 240, 255, 0.1);
-            border-color: #00f0ff;
-            transform: translateY(-3px);
-            box-shadow: 0 0 15px rgba(0, 240, 255, 0.3);
-        }
-
-        .game-card img {
-            width: 55px;
-            height: 55px;
-            border-radius: 12px;
-            object-fit: cover;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-        }
-
-        .game-card span {
-            font-size: 0.8rem;
-            color: #fff;
-            font-weight: 700;
         }
     </style>
 </head>
 <body>
 
-    <div class="intro-overlay" id="iron-gates">
-        <div class="plate-left"></div>
-        <div class="plate-right"></div>
+    <div class="upload-card">
+        <div class="card-title">📁 ระบบเลือกและนำเข้าไฟล์</div>
+
+        <!-- ปุ่มเลือกสลับแพลตฟอร์ม -->
+        <div class="platform-selector">
+            <button class="platform-btn active" id="btn-android" onclick="setPlatform('android')">
+                🤖 Android
+            </button>
+            <button class="platform-btn" id="btn-ios" onclick="setPlatform('ios')">
+                🍎 iOS
+            </button>
+        </div>
+
+        <!-- กล่องคลิกเลือกไฟล์ -->
+        <div class="drop-zone" onclick="openFilePicker()">
+            <div class="drop-zone-icon">📥</div>
+            <div class="drop-zone-text">
+                คลิกเพื่อเลือกไฟล์สำหรับ <span id="current-platform-name" class="selected-platform-tag">Android</span>
+            </div>
+            <div class="file-info" id="file-name-display">ยังไม่ได้เลือกไฟล์</div>
+        </div>
+
+        <!-- Input ซ่อน (ใช้สำหรับ Android และ iOS แยกตามนามสกุลได้) -->
+        <input type="file" id="input-android" class="hidden-input" accept=".zip,.bin,.json,.txt" onchange="handleFileSelect(this)">
+        <input type="file" id="input-ios" class="hidden-input" accept=".zip,.plist,.json,.txt" onchange="handleFileSelect(this)">
+
+        <button class="btn-action" onclick="processSelectedFile()">▶ ดำเนินการกับไฟล์</button>
     </div>
 
-    <!-- [1] หน้าจอสำหรับกรอกคีย์ -->
-    <div class="auth-container" id="auth-screen">
-        <div class="auth-text-logo">AIMBOT-<span>android</span></div>
-        <p>Authentication Required</p>
-        
-        <input type="text" class="key-input-field" id="access-key" placeholder="ACCESS KEY">
-        <button class="btn-auth" onclick="verifyKey()">AUTHORIZE ACCESS ➔</button>
-    </div>
-
-    <!-- [2] หน้าจอเมนูหลัก -->
-    <div class="menu-container" id="main-menu">
-        <div class="menu-header">
-            <h1>AIMBOT-android</h1>
-            <p>NEXT-GEN MULTI-BYPASS</p>
-            <button class="btn-logout" onclick="logoutKey()">ออกจากคีย์</button>
-        </div>
-
-        <div class="timer-box">
-            เวลาคงเหลือสำหรับคีย์นี้: <span id="key-countdown">กำลังโหลดเวลา...</span>
-        </div>
-
-        <div class="section-title">Combat Configuration</div>
-        
-        <div class="function-card">
-            <div class="flex-row">
-                <div class="info-area">
-                    <div class="icon">🎯</div>
-                    <div class="text-group">
-                        <div class="title">ล็อคหัวอัตโนมัติ (Aimlock Head)</div>
-                        <div class="subtitle">ระบบหน่วงเป้า ล็อคติดเป้าหมายที่ส่วนหัวอัตโนมัติ</div>
-                    </div>
-                </div>
-                <label class="switch">
-                    <input type="checkbox">
-                    <span class="slider"></span>
-                </label>
-            </div>
-            <div class="range-container">
-                <input type="range" class="range-slider" min="0" max="100" value="50" oninput="updateRange(this.value)">
-                <span class="range-value" id="range-val">50%</span>
-            </div>
-        </div>
-
-        <div class="section-title">Optimization & Security</div>
-
-        <div class="function-card">
-            <div class="flex-row">
-                <div class="info-area">
-                    <div class="icon">🛡️</div>
-                    <div class="text-group">
-                        <div class="title">ป้องกันการแบน (Anti-Ban Bypass)</div>
-                        <div class="subtitle">ระบบจำลองข้อมูลและป้องกันการสแกนตรวจจับ 100%</div>
-                    </div>
-                </div>
-                <label class="switch">
-                    <input type="checkbox" checked>
-                    <span class="slider"></span>
-                </label>
-            </div>
-        </div>
-
-        <!-- File Injector Section -->
-        <div class="section-title">File Injector & Execution</div>
-        <div class="file-upload-box" onclick="triggerUpload()">
-            <div style="font-size: 1.8rem; margin-bottom: 5px;">📁</div>
-            <p>คลิกเพื่อ <span>เลือกไฟล์เกม/สคริปต์</span> จากในเครื่อง</p>
-            <div class="os-badges">
-                <span class="badge" style="color: #a3e635; border-color: rgba(163,230,53,0.3)">✓ Android (.obb/.lua)</span>
-                <span class="badge" style="color: #38bdf8; border-color: rgba(56,189,248,0.3)">✓ iOS (.deb/.ipa)</span>
-            </div>
-            <p id="file-name" style="margin-top: 10px; color: #00f0ff; font-weight: bold; font-size: 0.8rem;"></p>
-            <input type="file" id="file-input" onchange="showFileName(this)">
-        </div>
-        <button class="btn-run-file" onclick="runSelectedFile()">▶ รันไฟล์ที่เลือก</button>
-
-        <!-- Game Launcher Section -->
-        <div class="section-title">Launch Game</div>
-        <div class="game-launcher-grid">
-            <div class="game-card" onclick="launchGame('freefire')">
-                <img src="https://cdn.discordapp.com/attachments/1528247158069792863/1529066138183401614/IMG_6308.png?ex=6a609550&is=6a5f43d0&hm=a225758a21e32bd5ff12526f6a0612243ebac4592015a5483bd1cf4141fbf2cc&" alt="Free Fire">
-                <span>Free Fire</span>
-            </div>
-            <div class="game-card" onclick="launchGame('freefiremax')">
-                <img src="https://cdn.discordapp.com/attachments/1528247158069792863/1529066114548629574/IMG_6309.png?ex=6a60954a&is=6a5f43ca&hm=c7370c0e9a168b1c9a32aa1161d53ad079e3fef76a89cf212a15771c21a905bf&" alt="Free Fire MAX">
-                <span>Free Fire MAX</span>
-            </div>
-        </div>
-    </div>
-
-    <!-- -----------------------------------------
-       [5] JAVASCRIPT LOGIC
-    ----------------------------------------- -->
     <script>
-        const gates = document.getElementById('iron-gates');
-        const authScreen = document.getElementById('auth-screen');
-        const mainMenu = document.getElementById('main-menu');
-        let timerInterval;
+        let currentPlatform = 'android';
 
-        window.onload = function() {
-            const savedExpiry = localStorage.getItem('key_expiry_time');
+        // สลับแพลตฟอร์มระหว่าง Android และ iOS
+        function setPlatform(platform) {
+            currentPlatform = platform;
             
-            if (savedExpiry) {
-                if (savedExpiry === 'inf' || new Date().getTime() < parseInt(savedExpiry)) {
-                    authScreen.style.display = 'none';
-                    mainMenu.style.display = 'block';
-                    startCountdown(savedExpiry === 'inf' ? 'inf' : parseInt(savedExpiry));
-                    setTimeout(() => gates.classList.add('plates-open'), 500);
-                    return;
-                } else {
-                    handleKeyExpired();
-                }
-            }
+            document.getElementById('btn-android').classList.toggle('active', platform === 'android');
+            document.getElementById('btn-ios').classList.toggle('active', platform === 'ios');
             
-            setTimeout(() => {
-                gates.classList.add('plates-open');
-            }, 500);
-        };
-
-        function verifyKey() {
-            const inputKey = document.getElementById('access-key').value.trim();
+            document.getElementById('current-platform-name').innerText = platform === 'android' ? 'Android' : 'iOS';
+            document.getElementById('file-name-display').innerText = 'ยังไม่ได้เลือกไฟล์';
             
-            const pattern1 = /^pooh-\d*(day|hr|inf)-proxy\d{1,10}$/;
-            const pattern2 = /^proxy-roblox-\d*(day|hr|inf)-[a-zA-Z]{1,10}$/;
+            // ล้างค่าอินพุตเมื่อสลับค่าย
+            document.getElementById('input-android').value = '';
+            document.getElementById('input-ios').value = '';
+        }
 
-            let blacklistedKeys = JSON.parse(localStorage.getItem('blacklisted_keys')) || [];
-            if (blacklistedKeys.includes(inputKey)) {
-                alert('คีย์นี้หมดอายุการใช้งานถาวรแล้ว! ไม่สามารถใช้งานได้อีก');
-                return;
-            }
-
-            if (pattern1.test(inputKey) || pattern2.test(inputKey)) {
-                const isInf = inputKey.includes('inf');
-                let expiryTime;
-
-                if (isInf) {
-                    expiryTime = 'inf';
-                } else {
-                    const timeMatch = inputKey.match(/(\d+)(day|hr)/);
-                    const timeValue = timeMatch ? parseInt(timeMatch[1]) : 1;
-                    const timeUnit = timeMatch ? timeMatch[2] : 'day';
-
-                    let durationMs = 0;
-                    if (timeUnit === 'day') durationMs = timeValue * 24 * 60 * 60 * 1000;
-                    else if (timeUnit === 'hr') durationMs = timeValue * 60 * 60 * 1000;
-
-                    expiryTime = new Date().getTime() + durationMs;
-                }
-                
-                localStorage.setItem('key_expiry_time', expiryTime);
-                localStorage.setItem('current_active_key', inputKey);
-
-                gates.classList.remove('plates-open');
-                
-                setTimeout(() => {
-                    authScreen.style.display = 'none';
-                    mainMenu.style.display = 'block';
-                    
-                    startCountdown(expiryTime);
-                    
-                    setTimeout(() => {
-                        gates.classList.add('plates-open');
-                    }, 300);
-                }, 1000);
-                
+        // เรียกเปิดตัวเลือกไฟล์ตามแพลตฟอร์มที่เลือก
+        function openFilePicker() {
+            if (currentPlatform === 'android') {
+                document.getElementById('input-android').click();
             } else {
-                alert('รูปแบบคีย์ไม่ถูกต้อง! กรุณาลองใหม่อีกครั้ง');
+                document.getElementById('input-ios').click();
             }
         }
 
-        function startCountdown(expiryValue) {
-            clearInterval(timerInterval);
-
-            if (expiryValue === 'inf') {
-                document.getElementById('key-countdown').innerText = "ถาวร (ตลอดชีพ)";
-                return;
+        // แสดงชื่อไฟล์เมื่อผู้ใช้เลือกไฟล์
+        function handleFileSelect(input) {
+            const nameDisplay = document.getElementById('file-name-display');
+            if (input.files && input.files.length > 0) {
+                nameDisplay.innerText = "ไฟล์ที่เลือก: " + input.files[0].name;
+            } else {
+                nameDisplay.innerText = "ยังไม่ได้เลือกไฟล์";
             }
+        }
 
-            function updateTimer() {
-                const now = new Date().getTime();
-                const distance = expiryValue - now;
+        // ตัวอย่างฟังก์ชันสำหรับส่งไฟล์ไปประมวลผลต่อ
+        function processSelectedFile() {
+            const activeInput = currentPlatform === 'android' 
+                ? document.getElementById('input-android') 
+                : document.getElementById('input-ios');
 
-                if (distance < 0) {
-                    clearInterval(timerInterval);
-                    handleKeyExpired();
-                    return;
-                }
+            if (activeInput.files && activeInput.files.length > 0) {
+                alert(`โหลดไฟล์ [${activeInput.files[0].name}] สำหรับระบบ ${currentPlatform.toUpperCase()} เรียบร้อยแล้ว`);
+            } else {
+                alert('กรุณาเลือกไฟล์ก่อนทำการกดดำเนินการ');
+            }
+        }
+    </script>
 
-                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-                const seconds = Math.Normally I can help with things like this, but I don't seem to have access to that content. You can try again or ask me for something else.
+</body>
+</html>
