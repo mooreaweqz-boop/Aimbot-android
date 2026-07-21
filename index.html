@@ -8,7 +8,7 @@
     <!-- ดึงฟอนต์ Mali จาก Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Mali:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;1,200;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Mali:wght@500;600;700&display=swap" rel="stylesheet">
 
     <style>
         * {
@@ -20,7 +20,7 @@
         }
 
         body {
-            background: #000000;
+            background: #050508;
             color: #e2e8f0;
             min-height: 100vh;
             display: flex;
@@ -30,37 +30,66 @@
         }
 
         /* -----------------------------------------
-           [1] AUTHENTICATION UI (หน้ากรอกคีย์)
+           [1] ROTATING LOGO ANIMATION (เอฟเฟกต์ไฟหมุน)
+        ----------------------------------------- */
+        .logo-wrapper {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* วงแหวนไฟวิ่งหมุนวน */
+        .logo-wrapper::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: conic-gradient(from 0deg, transparent, #ef4444, #00f0ff, transparent 60%);
+            animation: rotateGlow 2.5s linear infinite;
+        }
+
+        @keyframes rotateGlow {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* กล่องครอบรูปภาพด้านในเพื่อบดขอบให้ได้รูปวงกลมพอดี */
+        .logo-inner {
+            position: relative;
+            width: 112px;
+            height: 112px;
+            border-radius: 50%;
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .logo-inner img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* ปรับรูปภาพให้ขยายเต็มพอดีกับวงกลม */
+        }
+
+        /* -----------------------------------------
+           [2] AUTHENTICATION UI (หน้ากรอกคีย์)
         ----------------------------------------- */
         .auth-card {
             width: 100%;
             max-width: 380px;
-            background: rgba(12, 12, 15, 0.95);
+            background: rgba(12, 12, 16, 0.95);
             border: 1px solid rgba(239, 68, 68, 0.3);
             border-radius: 28px;
             padding: 35px 25px;
-            box-shadow: 0 0 35px rgba(239, 68, 68, 0.2);
+            box-shadow: 0 0 35px rgba(239, 68, 68, 0.15);
             text-align: center;
-        }
-
-        .logo-circle {
-            width: 110px;
-            height: 110px;
-            margin: 0 auto 20px;
-            border-radius: 50%;
-            border: 2px solid #ef4444;
-            box-shadow: 0 0 20px rgba(239, 68, 68, 0.6);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #000;
-            overflow: hidden;
-        }
-
-        .logo-circle img {
-            width: 90%;
-            height: 90%;
-            object-fit: contain;
         }
 
         .brand-title {
@@ -69,24 +98,18 @@
             color: #ffffff;
             margin-bottom: 6px;
         }
-        .brand-title span {
-            color: #ef4444;
-        }
+        .brand-title span { color: #ef4444; }
 
         .welcome-subtext {
             color: #fca5a5;
             font-size: 0.85rem;
-            margin-bottom: 30px;
-        }
-
-        .input-group {
             margin-bottom: 25px;
         }
 
         .key-input {
             width: 100%;
             padding: 16px;
-            background: rgba(22, 22, 26, 0.9);
+            background: rgba(22, 22, 28, 0.9);
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 14px;
             color: #fff;
@@ -94,8 +117,8 @@
             text-align: center;
             outline: none;
             transition: 0.3s;
+            margin-bottom: 20px;
         }
-
         .key-input:focus {
             border-color: #ef4444;
             box-shadow: 0 0 12px rgba(239, 68, 68, 0.4);
@@ -114,23 +137,22 @@
             transition: 0.3s;
             box-shadow: 0 4px 20px rgba(239, 68, 68, 0.5);
         }
-
         .btn-submit:hover {
             transform: translateY(-2px);
             box-shadow: 0 6px 25px rgba(239, 68, 68, 0.7);
         }
 
         /* -----------------------------------------
-           [2] MAIN FILE SELECTOR UI (หน้าเลือกไฟล์)
+           [3] DASHBOARD & FILE SELECTOR UI
         ----------------------------------------- */
         .main-card {
             display: none;
             width: 100%;
             max-width: 420px;
-            background: rgba(13, 27, 42, 0.85);
+            background: rgba(13, 27, 42, 0.9);
             border: 1px solid rgba(0, 240, 255, 0.25);
             border-radius: 24px;
-            padding: 30px 25px;
+            padding: 25px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(0, 240, 255, 0.05);
         }
 
@@ -143,12 +165,11 @@
         .main-header h2 {
             font-size: 1.4rem;
             color: #ffffff;
-            font-weight: 700;
         }
 
         .timer-badge {
             margin-top: 8px;
-            padding: 8px 12px;
+            padding: 6px 14px;
             background: rgba(0, 240, 255, 0.1);
             border: 1px solid rgba(0, 240, 255, 0.3);
             border-radius: 10px;
@@ -170,23 +191,50 @@
             cursor: pointer;
         }
 
-        .platform-selector {
-            display: flex;
-            gap: 10px;
+        /* ปุ่มเลือกโหมดฟังก์ชัน (VIPFF, VIPFFM, VIPFPS) */
+        .mode-selector {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
             margin-bottom: 20px;
-            margin-top: 15px;
         }
 
-        .platform-btn {
-            flex: 1;
-            padding: 12px;
+        .mode-btn {
+            padding: 10px 5px;
             border: 1px solid rgba(255, 255, 255, 0.1);
             background: rgba(255, 255, 255, 0.03);
             color: #94a3b8;
             border-radius: 12px;
             cursor: pointer;
-            font-size: 0.9rem;
-            font-weight: 600;
+            font-size: 0.85rem;
+            font-weight: 700;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .mode-btn.active {
+            background: rgba(239, 68, 68, 0.2);
+            border-color: #ef4444;
+            color: #ffffff;
+            box-shadow: 0 0 10px rgba(239, 68, 68, 0.3);
+        }
+
+        /* ปุ่มเลือกแพลตฟอร์ม (Android / iOS) */
+        .platform-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .platform-btn {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.03);
+            color: #94a3b8;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 0.85rem;
             transition: all 0.3s;
         }
 
@@ -194,33 +242,31 @@
             background: rgba(0, 240, 255, 0.15);
             border-color: #00f0ff;
             color: #00f0ff;
-            box-shadow: 0 0 12px rgba(0, 240, 255, 0.2);
+            box-shadow: 0 0 10px rgba(0, 240, 255, 0.2);
         }
 
+        /* โซนเลือกไฟล์ */
         .drop-zone {
             border: 2px dashed rgba(0, 240, 255, 0.3);
             border-radius: 16px;
-            padding: 25px 15px;
+            padding: 20px 15px;
             text-align: center;
             cursor: pointer;
             background: rgba(0, 240, 255, 0.01);
             transition: 0.3s;
         }
-
         .drop-zone:hover {
             border-color: #00f0ff;
             background: rgba(0, 240, 255, 0.05);
         }
 
         .file-info {
-            margin-top: 10px;
-            font-size: 0.85rem;
+            margin-top: 8px;
+            font-size: 0.8rem;
             color: #38bdf8;
         }
 
-        .hidden-input {
-            display: none;
-        }
+        .hidden-input { display: none; }
 
         .btn-action {
             width: 100%;
@@ -230,12 +276,11 @@
             border: none;
             border-radius: 12px;
             color: #000;
-            font-size: 1rem;
+            font-size: 0.95rem;
             font-weight: 700;
             cursor: pointer;
             transition: 0.3s;
         }
-
         .btn-action:hover {
             box-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
         }
@@ -245,21 +290,20 @@
 
     <!-- [1] หน้าเข้าสู่ระบบ / กรอกคีย์ -->
     <div class="auth-card" id="auth-screen">
-        <div class="logo-circle">
-            <img src="https://cdn.discordapp.com/attachments/1528247158069792863/1528249908845351042/IMG_1880.png?ex=6a5d9d23&is=6a5c4ba3&hm=1258cef0d3504e6bfe263a18198e3ae78fd2238c6bd69536c54b77deba2388a1&" alt="Logo">
+        <div class="logo-wrapper">
+            <div class="logo-inner">
+                <img src="https://cdn.discordapp.com/attachments/1528247158069792863/1528249908845351042/IMG_1880.png?ex=6a5d9d23&is=6a5c4ba3&hm=1258cef0d3504e6bfe263a18198e3ae78fd2238c6bd69536c54b77deba2388a1&" alt="Logo">
+            </div>
         </div>
 
         <div class="brand-title">POOH x KAO <span>ADxIOS</span></div>
         <div class="welcome-subtext">✨ ยินดีต้อนรับ! กรุณายืนยันตัวตนนะ ✨</div>
 
-        <div class="input-group">
-            <input type="text" class="key-input" id="access-key" placeholder="🔑 กรอกคีย์เปิดใช้งานระบบที่นี่">
-        </div>
-
+        <input type="text" class="key-input" id="access-key" placeholder="🔑 กรอกคีย์เปิดใช้งานระบบที่นี่">
         <button class="btn-submit" onclick="verifyKey()">เปิดระบบเลยยย 🚀</button>
     </div>
 
-    <!-- [2] หน้าจัดการเลือกไฟล์ -->
+    <!-- [2] หน้าจัดการหลัก -->
     <div class="main-card" id="main-screen">
         <div class="main-header">
             <h2>POOH x KAO DASHBOARD</h2>
@@ -269,13 +313,22 @@
             <button class="btn-logout" onclick="logout()">ออกจากระบบ</button>
         </div>
 
+        <!-- ตัวเลือกโหมดฟังก์ชัน VIP -->
+        <div class="mode-selector">
+            <button class="mode-btn active" id="mode-vipff" onclick="selectMode('VIPFF')">VIPFF</button>
+            <button class="mode-btn" id="mode-vipffm" onclick="selectMode('VIPFFM')">VIPFFM</button>
+            <button class="mode-btn" id="mode-vipfps" onclick="selectMode('VIPFPS')">VIPFPS</button>
+        </div>
+
+        <!-- ตัวเลือกแพลตฟอร์มระบบปฏิบัติการ -->
         <div class="platform-selector">
             <button class="platform-btn active" id="btn-android" onclick="setPlatform('android')">🤖 Android</button>
             <button class="platform-btn" id="btn-ios" onclick="setPlatform('ios')">🍎 iOS</button>
         </div>
 
+        <!-- โซนเลือกไฟล์ -->
         <div class="drop-zone" onclick="openFilePicker()">
-            <div style="font-size: 2rem; margin-bottom: 8px;">📁</div>
+            <div style="font-size: 1.8rem; margin-bottom: 5px;">📁</div>
             <div>เลือกไฟล์สำหรับระบบ <span id="current-platform" style="color:#00f0ff; font-weight:bold;">Android</span></div>
             <div class="file-info" id="file-name-display">ยังไม่ได้เลือกไฟล์</div>
         </div>
@@ -288,6 +341,7 @@
 
     <script>
         let currentPlatform = 'android';
+        let currentMode = 'VIPFF';
         let countdownTimer = null;
         const keyPattern = /^pooh-(\d*)(day|hr|inf)-proxy\d{1,10}$/;
 
@@ -339,11 +393,9 @@
                 } else {
                     const amount = amountStr ? parseInt(amountStr) : 1;
                     let durationMs = 0;
-                    if (unit === 'day') {
-                        durationMs = amount * 24 * 60 * 60 * 1000;
-                    } else if (unit === 'hr') {
-                        durationMs = amount * 60 * 60 * 1000;
-                    }
+                    if (unit === 'day') durationMs = amount * 24 * 60 * 60 * 1000;
+                    else if (unit === 'hr') durationMs = amount * 60 * 60 * 1000;
+                    
                     expiryTime = new Date().getTime() + durationMs;
                 }
 
@@ -376,15 +428,11 @@
                 if (distance <= 0) {
                     clearInterval(countdownTimer);
                     const currentKey = localStorage.getItem('active_key');
-                    if (currentKey) {
-                        invalidateKey(currentKey);
-                    }
+                    if (currentKey) invalidateKey(currentKey);
                     return;
                 }
 
                 const days = Math.floor(distance / (1000 * 60 * 60 * 24));
                 const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
                 const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-Normally I can help with things like this, but I don't seem to have access to that content. You can try again or ask me for something else.
+                const seconds = Math.floor((distance % (1Normally I can help with things like this, but I don't seem to have access to that content. You can try again or ask me for something else.
